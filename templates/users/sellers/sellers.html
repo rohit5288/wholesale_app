@@ -1,0 +1,285 @@
+{% include "admin-includes/header.html" %}
+{% load static %}
+{% load extras %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Sellers</h4>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+						<li class="breadcrumb-item"><a class="white-text" href="/">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a class="white-text" href="{% url 'sellers:seller_list' %}">Sellers</a>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+			<div class="page-btn d-flex flex-wrap">
+				{% if users %}
+                <form action="{% url 'users:download_customer_reports' %}?role_id=3" method="POST">
+					{% csrf_token %} 			
+					<input type ="hidden" class ="timezone" name ="timezone">
+					<div><button type="submit" class="btn btn-primary sharp me-2"><i class="fas fa-download me-2"></i>Export Csv</button></div>
+				</form> 
+				{% endif %}
+                {% comment %} <a class="btn btn-primary" href="{% url 'users:add_user' %}"><i class="fas fa-plus me-2"></i> Buyer</a> {% endcomment %}
+            </div>
+        </div>
+		<!-- cards -->
+		<div class="row state-overview">
+            <div class="col-xl-3 col-lg-4 col-sm-6 col-12">
+                <a href="?" style="color: inherit;" class="d-flex">
+                    <div class="dash-count das4">
+                        <div class="dash-counts">
+                            <h5>Total Sellers</h5>
+                            <h4>{{'total_user'|sellers_count}}</h4>
+                        </div>
+                        <div class="dash-imgs">
+                            <span><i class="fad fa-users"></i></span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-xl-3 col-lg-4 col-sm-6 col-12">
+                <a href="?status=1" style="color: inherit;" class="d-flex">
+                    <div class="dash-count das5">
+                        <div class="dash-counts">
+                            <h5>Active Sellers</h5>
+                            <h4>{{'active_user'|sellers_count}}</h4>
+                        </div>
+                        <div class="dash-imgs">
+                            <span><i class="fas fa-badge-check"></i></span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-xl-3 col-lg-4 col-sm-6 col-12">
+                <a href="?status=2" style="color: inherit;" class="d-flex">
+                    <div class="dash-count das6">
+                        <div class="dash-counts">
+                            <h5>Inactive Sellers</h5>
+                            <h4>{{'inactive_user'|sellers_count}}</h4>
+                        </div>
+                        <div class="dash-imgs">
+                            <span><i class="fas fa-times-circle"></i></span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-xl-3 col-lg-4 col-sm-6 col-12">
+                <a href="?status=3" style="color: inherit;" class="d-flex">
+                    <div class="dash-count das7">
+                        <div class="dash-counts">
+                            <h5>Deleted Sellers</h5>
+                            <h4>{{'deleted_user'|sellers_count}}</h4>
+                        </div>
+                        <div class="dash-imgs">
+                            <span><i class="fas fa-user-minus"></i></span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+		<!-- cards end -->
+
+		<div class="card">
+			<div class="col-xl-12 col-lg-12">
+				<div class="card flex-fill">
+					<div class="card-header pb-0 d-md-flex justify-content-between align-items-center">
+						<h5 class="card-title">Sellers Registered in <span id="r_selected_year"></span>{% if selected_month %}(<span id="r_selected_month"></span>){% endif %}</h5>
+						<div class="graph-sets mt-md-0 mt-2">
+							<div class="dropdown d-flex">
+                                <input type="hidden" id="Url1" data-url="{% url 'sellers:seller_graph' %}" />
+								<select class="graph-dropdown me-2" name="r_months" id="r_months" onchange="GetRentersGraphData(this.value)">
+									<option value="">Select</option>
+									<option value="1">January</option>
+									<option value="2">February</option>
+									<option value="3">March</option>
+									<option value="4">April</option>
+									<option value="5">May</option>
+									<option value="6">June</option>
+									<option value="7">July</option>
+									<option value="8">August</option>
+									<option value="9">September</option>
+									<option value="10">October</option>
+									<option value="11">November</option>
+									<option value="12">December</option>
+								</select>
+								<select class="graph-dropdown" name="r_years" id="r_years" onchange="GetRentersGraphData(this.value)"></select>
+							</div>
+						</div>
+					</div>
+					<div class="card-body">
+						<div class="row">
+							<div class="col-12">
+								<div id="chart-container1"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+        <div class="card mt-2">
+            <div class="card-body" id="card_body_div">
+                <div class="dataview">
+                    <form onsubmit="Loader()" action="" method="GET">
+						<div class="table-responsive">
+							<table class="table datatable">
+								<thead>
+									<tr>
+										<th>Full Name</th>
+										<th>Email</th>
+										<th>Mobile Number</th>
+										<th>Created on From</th>
+										<th>Created on To</th>
+										<th>Status </th>
+										<th>Actions</th>
+									</tr>
+								</thead>
+								<thead>
+									<tr class="search-row">
+										<td><input type="text"  value="{{full_name}}" class="form-control" name="full_name" maxlength="20"></td>
+										<td><input type="text" value="{{email}}" class="form-control" name="email" maxlength="40"></td>
+										<td><input type="text" value="{{mobile_no}}" onkeypress="return /[0-9]/i.test(event.key)" onchange="this.form.submit()" class="form-control" name="mobile_no" maxlength="20"></td>
+										<td><input type="date" onkeydown="return false" value="{{created_on_from}}" class="position-relative form-control" name="created_on_from" onchange="this.form.submit()"></td>
+										<td><input type="date" onkeydown="return false" value="{{created_on_to}}" class="position-relative form-control" name="created_on_to" onchange="this.form.submit()"></td>
+										<td>
+											<select class="form-control" name="status" onchange="this.form.submit()">
+												<option  value=""></option>
+												<option {% if status == '1' %} selected {% endif %} value="1">ACTIVE</option>
+												<option {% if status == '2' %} selected {% endif %} value="2">INACTIVE</option>
+												<option {% if status == '3' %} selected {% endif %} value="3">DELETED</option>
+											</select>
+										</td>
+										<td><button type="submit" onclick="refresh()"  class="btn btn-primary">Search</button></td>
+									</tr>
+								</thead>
+								<tbody>
+									{% if users %}
+										{% for user in users %}
+										<tr>
+											<td>
+												<div class="d-flex align-items-center display-images">
+													{% if user.profile_pic %}
+													<a href="{{user.profile_pic.url}}" data-fancybox>
+														<img src="{{user.profile_pic.url}}" class="rounded-lg me-2" width="24" alt="">
+													</a>
+													{% else %}
+													<a href="{% static 'admin-assets/images/dp.png' %}" data-fancybox>
+														<img src="{% static 'admin-assets/images/dp.png' %}"
+														class="rounded-lg me-2" width="24" alt="">
+													</a>
+													{% endif %}
+													{% if user.full_name %}
+													<span class="w-space-no">{{ user.full_name }}</span>
+													{% else %}
+													<span class="w-space-no">-</span>
+													{% endif %}
+												</div>
+											</td>
+											<td class='clickable-row' data-href="{% url 'users:view_user' user.id %}">
+												{% if user.email %}{{ user.email }}{% else %}-{% endif %}
+											</td>
+											<td class='clickable-row' data-href="{% url 'users:view_user' user.id %}">
+												{% if user.mobile_no %}{% if user.country_code %}{{user.country_code}}{% endif %}{{ user.mobile_no }}{% else %}-{% endif %}
+											</td>
+											<td class='clickable-row' data-href="{% url 'users:view_user' user.id %}">
+												<span class="w-space-no">
+												<script>
+													var date = ConvertDateTime("{{ user.created_on|date:'Y-m-d' }}", "{{ user.created_on|time:'H:i' }}");
+													document.write(date);
+												</script>
+												</span>
+											</td>
+											<td class='clickable-row' data-href="{% url 'users:view_user' user.id %}">
+
+												<span class="w-space-no">
+													{% if created_on_to %}
+													{% date_format created_on_to as date_format  %}
+														<script>
+															var date = ConvertDateTime1("{{ date_format|date:'Y-m-d' }}", "{{ date_format|time:'H:i' }}");
+															document.write(date);
+														</script>
+													{% else %}
+												<script>
+													var date = ConvertDateTime("{{1|today_date|date:'Y-m-d' }}", "{{1| today_date|time:'H:i' }}");
+													document.write(date);
+												</script>
+												{% endif %}
+												</span>
+											</td>
+											<td class='clickable-row' data-href="{% url 'users:view_user' user.id %}">
+												{% if user.status == 1 %}
+												<span class="badge bg-success">ACTIVE</span>
+												{% elif user.status == 2 %}
+												<span class="badge bg-warning">INACTIVE</span>
+												{% else %}
+												<span class="badge bg-danger">DELETED</span>
+												{% endif %}
+											</td>
+											<td>
+												<div class="d-flex">
+													<a title="View Details" href="{% url 'users:view_user' user.id %}" class="btn btn-success shadow btn-xs sharp me-1"><i class="fa fa-eye"></i></a>
+													{% comment %} <a class="btn btn-info shadow btn-xs sharp me-1" href="{% url 'users:edit_user' user.id %}"><i class="fa fa-edit"></i></a> {% endcomment %}
+												</div>
+											</td>
+										</tr>
+										{% endfor %}
+									{% endif %}
+								</tbody>
+							</table>
+						</div>
+					</form>
+                    {% if users.has_other_pages %}
+						<nav aria-label="Page navigation">
+							<ul class="pagination">
+								{% if users.has_previous %}
+									<li class="page-item">
+										<a class="page-link" href="?{% url_replace request 'page' users.previous_page_number %}">&laquo;</a>                                          
+									</li>
+								{% else %}
+									<li class="page-item disabled">
+										<span class="page-link">&laquo;</span>
+									</li>
+								{% endif %}
+								{% for i in users.paginator.page_range %}
+									{% if users.number == i %}
+										<li class="page-item active">
+											<span class="page-link">{{ i }} <span class="sr-only">(current)</span></span>
+										</li>
+									{% elif i > users.number|add:'-5' and i < users.number|add:'5' %}
+										<li class="page-item">
+											<a class="page-link" href="?{% url_replace request 'page' i %}">{{ i }}</a>
+										</li>
+									{% endif %}
+								{% endfor %}
+								{% if users.has_next %}
+									<li class="page-item">
+										<a class="page-link" href="?{% url_replace request 'page' users.next_page_number %}">&raquo;</a>
+									</li>
+								{% else %}
+									<li class="page-item disabled">
+										<span class="page-link">&raquo;</span>
+									</li>
+								{% endif %}
+							</ul>
+						</nav>
+					{% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% include "admin-includes/footer.html" %}
+<script src="{% static 'admin-assets/js/customized-js/graph.js' %}"></script>
+
+<script>
+// redirects on same div location after refresh
+$(document).ready(function() {
+    if("{{scroll_required}}" == "True"){
+        $('html, body').animate({
+            scrollTop: ($("#card_body_div").offset().top + 170)
+        }, 100);
+    }
+});
+</script>

@@ -1,0 +1,90 @@
+
+<!doctype html>
+<html lang="en-US">{% load static %}
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+    <title>Reset Password</title>
+    <meta name="description" content="Reset Password.">
+</head>
+
+<body marginheight="0" topmargin="0" marginwidth="0" style="margin: 0px;" leftmargin="0">
+    <!-- 100% body table -->
+    <table cellspacing="0" border="0" cellpadding="0" width="100%" bgcolor="#fff"
+        style="@import url(https://fonts.googleapis.com/css?family=Rubik:300,400,500,700|Open+Sans:300,400,600,700); font-family: 'Open Sans', sans-serif;">
+        <tr>
+            <td>
+                <table style="max-width:670px; margin:50px auto;" width="100%" border="0"
+                    align="center" cellpadding="0" cellspacing="0">
+                  
+                    <tr>
+                        <td>
+                            <table width="95%" border="0" align="center" cellpadding="0" cellspacing="0"
+                                style="max-width:670px; border:1px solid #f2f2f2; background:#fff; border-radius:3px; text-align:center;-webkit-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);-moz-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);box-shadow:0 6px 18px 0 rgba(0,0,0,.06);">
+                                <tr>
+                                    <td style="text-align:center;padding: 20px;background: #000;">
+                                        <a>
+                                            <img width="100" src="{{ protocol }}://{{ domain }}/static/admin-assets/images/logo.png" title="logo" alt="logo"> 
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="height:40px;">&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <img src="{{ protocol }}://{{ domain }}/static/admin-assets/images/login-img.png" title="logo" alt="logo" style="width: 300px;"> 
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="height:40px;">&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:0 35px;">
+                                        <h1 style="color:#1e1e2d; font-weight:600; margin:0;font-size:22px;font-family:'Rubik',sans-serif;">Account Registration
+                                        </h1>
+                                       
+                                        <p style="font-size:15px; color:#455056; margin:8px 0 0; line-height:24px;">
+                                            Hello {{user.email}},
+                                        <p style="font-size:15px; color:#455056; margin:8px 0 20px; line-height:24px;">
+                                            You are registered on our platform as a {% if user.role_id == 2 %}BUYER {% endif %}<br>
+                                            Your login credentials are :- <br>
+
+                                        </p>
+                                        
+                                    </td>
+                                </tr>
+                                <tr style="margin-top: 20px;">
+                                    <td style="padding:0 15px; margin-top:10px;">
+                                        <table style="margin:0px auto;border:1px solid #003874; border-collapse:collapse;padding:16px;text-align:left;vertical-align:top;height:auto!important;background-position:0px 0px">
+                                            <tr style="border:1px solid #003874;">
+                                                <th style="font-weight:600;font-size: 14px; padding: 20px; color: #455056;border: 1px solid #cbcbcb;">Email</th>
+                                                <td style="font-weight:500;font-size: 14px; padding: 20px; color: #243551;border: 1px solid #cbcbcb;">{{user.email}}</td>
+                                            </tr>
+                                            <tr style="border:1px solid #003874;">
+                                                <th style="font-weight:600;font-size: 14px; padding: 20px; color: #455056;border: 1px solid #cbcbcb;">Password</th>
+                                                <td style="font-weight:500;font-size: 14px; padding: 20px; color: #243551;border: 1px solid #cbcbcb;">{{token}}</td>
+                                            </tr>
+                                        </table> 
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="height:40px;">&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:center;padding: 20px 0;border-top: 2px solid #cbcbcb4a; background-color: #000;">
+                                        <p style="font-size:14px; color:#fff; line-height:18px; margin:0 0 0;">
+                                            Copyright  &copy; <span id="full_year">2024</span><a href="{% url 'frontend:index' %}"> Base </a>
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    <!--/100% body table-->
+</body>
+
+</html>

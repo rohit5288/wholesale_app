@@ -1,0 +1,101 @@
+{% include "admin-includes/header.html" %}{% load static %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Page Information</h4>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a class="white-text" href="/">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'smtp_settings:smtp_list' %}"
+                                class="white-text">SMTP Setting</a></li>
+                        <li class="breadcrumb-item active">View SMTP Detail</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="page-btn d-flex flex-wrap">
+                {% if page.is_active %}
+                <a class="btn btn-danger me-2" onclick="Loader()" href="{% url 'smtp_settings:active_deactive_smtp' page.id %}">Deactivate</a>
+                {% else %}
+                <a class="btn btn-primary me-2"   onclick="Loader()" href="{% url 'smtp_settings:active_deactive_smtp' page.id %}" >Activate</a>
+                {% endif %}
+
+                <a class="btn btn-secondary" href="{% url 'smtp_settings:smtp_list' %}"><i class="fa fa-angle-left me-1"></i> Back</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 col-lg-12 col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="productdetails">
+                            <ul class="product-bar">
+
+                                <li>
+                                    <h4>Email Backend </h4>
+                                    <h6><b>{{page.email_backend}}</b></h6>
+                                </li>
+
+
+                                <li>
+                                    <h4>Email Host </h4>
+                                    <h6><b>{{page.email_host}}</b></h6>
+                                </li>
+
+                                <li>
+                                    <h4>Email Port </h4> 
+                                    <h6><b>{{page.email_port}}</b></h6>
+                                </li>
+
+
+                                <li>
+                                    <h4>Use TLS </h4>
+                                    <h6>
+                                        {% if page.use_tls == 1 %}
+                                            <span class="badge bg-success">True</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">False</span>
+                                        {% endif %}
+                                    </h6>
+                                </li>
+                                <li>
+                                    <h4>Host Email </h4> 
+                                    <h6><b>{{page.email_host_user}}</b></h6>
+                                </li>
+
+                                <li>
+                                    <h4>Email Host Password </h4> 
+                                    <h6><b>{{page.email_host_password}}</b></h6>
+                                </li>
+
+                                <li>
+                                    <h4>Is Active </h4> 
+                                    <h6>
+                                        {% if page.is_active %}
+                                            <span class="badge bg-success">Active</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">Inactive</span>
+                                        {% endif %}
+                                    </h6>
+                                </li>
+
+                                {% if  page.created_on %}
+                                <li>
+                                    <h4>Created On </h4>
+                                    <h6>
+                                        <script>
+                                            var date = ConvertDateTime("{{ page.created_on|date:'Y-m-d' }}", "{{ page.created_on|time:'H:i' }}");
+                                            document.write(date);
+                                        </script>
+                                    </h6>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include "admin-includes/footer.html" %}

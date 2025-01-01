@@ -1,0 +1,65 @@
+{% include "admin-includes/header.html" %}{% load static %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>FAQ Information</h4>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a class="white-text" href="/">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a class="white-text"
+                                href="{% url 'static_pages:faq_list' %}">FAQs</a>
+                        </li>
+                        <li class="breadcrumb-item active">View FAQ</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="page-btn d-flex flex-wrap">
+                <a class="btn btn-secondary" href="{% url 'static_pages:faq_list' %}"><i class="fa fa-angle-left me-1"></i> Back</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 col-lg-12 col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="productdetails">
+                            <ul class="product-bar">
+                                <li>
+                                    <h4>FAQ Id </h4>
+                                    <h6>{% if faq.id %}{{faq.id}}{% else %}-{% endif %}</h6>
+                                </li>
+                                <li>
+                                    <h4>Question </h4>
+                                    <h6><b>{% if faq.question %}{{faq.question}}{% else %}-{% endif %}</b></h6>
+                                </li>
+                                <li>
+                                    <h4>Answer </h4>
+                                    <h6><b>{% if faq.answer %}{{faq.answer|safe}}{% else %}-{% endif %}</b></h6>
+                                </li>
+                                <li>
+                                    <h4>Created On </h4>
+                                    <h6>
+                                        <script>
+                                            var date = ConvertDateTime("{{ faq.created_on|date:'Y-m-d' }}", "{{ faq.created_on|time:'H:i' }}");
+                                            document.write(date);
+                                        </script>
+                                    </h6>
+                                </li>
+                                <li>
+                                    <h4>Updated On </h4>
+                                    <h6>
+                                        <script>
+                                            var date = ConvertDateTime("{{ faq.updated_on|date:'Y-m-d' }}", "{{ faq.updated_on|time:'H:i' }}");
+                                            document.write(date);
+                                        </script>
+                                    </h6>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% include "admin-includes/footer.html" %}

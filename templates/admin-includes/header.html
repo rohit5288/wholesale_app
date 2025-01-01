@@ -1,0 +1,385 @@
+<!DOCTYPE html>{% load static %}{% load extras %}{% load humanize %}
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+    <meta name="description" content="POS - Bootstrap Admin Template">
+    <meta name="keywords"
+        content="admin, estimates, bootstrap, business, corporate, creative, management, minimal, modern,  html5, responsive">
+    <meta name="author" content="toxsltech">
+    <meta name="robots" content="noindex, nofollow">
+    <title><ProjectName></title>
+    {% if 2|project_logo %}<link rel="shortcut icon" href="{{2|project_logo}}" />{% else %}<link rel="shortcut icon" href="{% static 'admin-assets/images/favicon.ico' %}" />{% endif %}
+    <link rel="stylesheet" href="{% static 'admin-assets/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'admin-assets/css/dataTables.bootstrap4.min.css' %}">
+    <link rel="stylesheet" href="{% static 'admin-assets/css/all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'admin-assets/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'admin-assets/css/responsive.css' %}">
+    <link rel="stylesheet" href="{% static 'admin-assets/css/flash.css' %}">
+    <link rel="stylesheet" href="{% static 'admin-assets/css/loader.css' %}">
+    <link rel="stylesheet" href="{% static 'admin-assets/css/selectize.css' %}">
+    <link rel="stylesheet" href="{% static 'admin-assets/css/swiper.css' %}">
+    <link rel="stylesheet" href="{% static 'admin-assets/css/jquery.fancybox.min.css' %}">
+    <link rel="stylesheet" href="{% static 'admin-assets/css/intlTelInput.css' %}">
+    <link rel="stylesheet" href="{% static 'admin-assets/css/customized-css/custom.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.0/dist/sweetalert2.min.css" rel="stylesheet">
+</head>
+<body>
+    {% if messages %}
+    <div class="flash animate--drop-in-fade-out">
+        {% for message in messages %}
+        <div class="flash__icon">
+            <i class="icon far fa-check-circle"></i>
+        </div>
+        <span class="flash__body">{{ message }}</span>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <script src="{% static 'admin-assets/js/moment.min.js' %}"></script>
+    <script src="{% static 'admin-assets/js/customized-js/moment.js' %}"></script>
+   
+    <div class="main-wrapper">
+        <div class="admin-header">
+            <div>
+                <div class="header-left active d-flex align-items-center">
+                    <a href="{% url 'frontend:index' %}" class="logo logo-normal w-100">
+                        {% if 1|project_logo %}
+                        <img src="{{1|project_logo}}" class="dl-none">
+                        <img src="{{1|project_logo}}" class="ml-none">
+                        {% else %}
+                        <img src="{% static 'admin-assets/images/logo.png' %}" class="d-none">
+                        <img src="{% static 'admin-assets/images/logo.png' %}">
+                        {% endif %}
+                    </a>
+                    <a href="{% url 'frontend:index' %}" class="logo-collapse">
+                        {% if 1|project_logo %}
+                        <img src="{{1|project_logo}}" class="d-none">
+                        <img src="{{1|project_logo}}">
+                        {% else %}
+                        <img src="{% static 'admin-assets/images/logo.png' %}" class="dl-none">
+                        <img src="{% static 'admin-assets/images/logo.png' %}" class="ml-none">
+                        {% endif %}
+                    </a>
+                   
+                </div>
+                <a id="mobile_btn" class="mobile_btn" href="#sidebar">
+                    <span class="bar-icon">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </span>
+                </a>
+                <div class="header-title">
+                    <a id="toggle_btn" href="javascript:void(0);">
+                    </a>
+                    <div class="dashboard_bar">
+                        {% if head_title %}{{head_title}}{% else %}Dashboard{% endif %}
+                    </div>
+                </div>
+            </div>
+            <ul class="nav user-menu">
+                <li>
+                    <a onclick="javascript:toggleFullScreen()" title="Toggle Full Screen">
+                        <i class="fas fa-expand full-screen mt-2"></i>
+                    </a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a href="javascript:void(0);" class="dropdown-toggle nav-link" data-bs-toggle="dropdown">
+                        <img src="{% static 'admin-assets/fonts/notification-bing.svg' %}" alt="img" class="mt-3"> 
+                        <span class="badge rounded-pill">{{request|unread_notifications_count}}</span>
+                    </a>
+                  <div class="dropdown-menu notifications">
+                        <div class="topnav-dropdown-header">
+                            <span class="notification-title">Notifications</span>
+                            <a href="{% url 'accounts:mark_read_notifications' request.user.id %}" class="clear-noti"> Clear All </a>
+                        </div>
+                       <div class="noti-content">
+                            <ul class="notification-list">
+                                {% if request.user.id|notifications %}
+                                    {% for notification in request.user.id|notifications %}
+ 
+                                    <li class="notification-message">
+                                        {% if notification.notification_type == 1 %}
+                                        <a href="{% url 'events:view_event_details' notification.obj_id %}?n_id={{notification.id}}"> 
+                                        {% elif notification.notification_type == 2 %}
+                                        <a href="{% url 'products:view_payment_request' notification.payment_request.id %}">
+                                        {% endif %}
+                                            <div class="media d-flex">
+                                                <span class="avatar flex-shrink-0">
+                                                    <img  {% if notification.created_by.profile_pic %}
+                                                    src="{{notification.created_by.profile_pic.url}}" {% else %}
+                                                    src="{% static 'admin-assets/images/dp.png' %}"
+                                                    {% endif %} />
+                                                </span>
+                                                <div class="media-body flex-grow-1">
+                                                    <p class="noti-details">
+                                                        <span class="noti-title">
+                                                            {% if notification.title %}{{notification.title|truncatechars:50}}{% else %}-{% endif %}
+                                                        </span>
+                                                    </p>
+                                                    <p class="noti-details">
+                                                        <span class="noti-title">
+                                                           {% if notification %} {{notification.description}}{% else %}-{% endif %}
+                                                        </span>
+                                                    </p>
+                                                    <p class="noti-time">
+                                                        <span class="notification-time">
+                                                            <script>
+                                                                var date = ConvertGTime("{{ notification.created_on|date:'Y-m-d' }}", "{{ notification.created_on|time:'H:i' }}");
+                                                                document.write(date);
+                                                            </script>
+                                                        </span>
+                                                      
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li> 
+
+                                    {% endfor %}
+                                {% else %}
+                                    <li class="notification-message">
+                                        <p class="pb-0 mb-0 no-notification" style="color: #9f8a8a;"> No New Notifications</p>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                        <div class="topnav-dropdown-footer">
+                            {% if request.user.id|unread_notifications %}
+                            <a href="{% url 'accounts:notifications_list' request.user.id %}" >View all Notifications</a>
+                            {% endif %}
+                        </div>
+                    </div> 
+                </li> 
+                <li class="nav-item dropdown has-arrow main-drop">
+                    <a href="javascript:void(0);" class="dropdown-toggle nav-link userset" data-bs-toggle="dropdown">
+                        <span class="user-img">
+                            {% if request.user.profile_pic %}
+                            <img src="{{request.user.profile_pic.url}}" alt="" />
+                            {% else %}
+                            <img src="{% static 'admin-assets/images/dp.png' %}" alt="" />
+                            {% endif %}
+                            <span class="status online"></span>
+                        </span>
+                    </a>
+                    <div class="dropdown-menu menu-drop-user">
+                        <div class="profilename">
+                            <div class="profileset">
+                                <span class="user-img">
+                                {% if request.user.profile_pic %}
+                                <img src="{{request.user.profile_pic.url}}" alt="" />
+                                {% else %}
+                                <img src="{% static 'admin-assets/images/dp.png' %}" alt="" />
+                                {% endif %}
+                                <span class="status online"></span></span>
+                                <div class="profilesets">
+                                    <h6>
+                                        {% if request.user.username %}
+                                        {{ request.user.username }}
+                                        {% else %}{{request.user.full_name|truncatechars:20}}{% endif %}
+                                    </h6>
+                                    <h5>
+                                        {% if request.user.role_id == 1 %}
+                                        ADMIN {% else %}ADMIN{% endif %}
+                                    </h5>
+                                </div>
+                            </div>
+                            <hr class="m-0">
+                            <a class="dropdown-item" href="{% url 'users:view_user' request.user.id %}"> My Profile <i class="fas fa-user"></i></a>
+                            <a class="dropdown-item" href="{% url 'users:edit_admin' request.user.id %}">Update Profile <i class="fa fa-edit"></i></a>
+                            <a class="dropdown-item" href="{% url 'accounts:change_password' %}"> Change Password <i class="fas fa-unlock-alt"></i> </a>
+                            {% comment %} <a class="dropdown-item" href="{% url 'accounts:revenue_management' %}"> Revenue<i class="fas fa-wallet"></i> </a> {% endcomment %}
+                            <hr class="m-0">
+                            <a class="dropdown-item logout" href="{% url 'accounts:logout' %}"> Logout <i class="fas fa-sign-out-alt"></i></a>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <div class="dropdown mobile-user-menu">
+                <a href="javascript:void(0);" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"
+                    aria-expanded="false"><i class="fa fa-ellipsis-v"></i></a>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <a class="dropdown-item" href="{% url 'users:view_user' request.user.id %}">My Profile</a>
+                    <a class="dropdown-item" href="{% url 'users:edit_admin' request.user.id %}">Update Profile</a>
+                    <a class="dropdown-item" href="{% url 'accounts:change_password' %}">Change Password</a>
+                    {% comment %} <a class="dropdown-item" href="{% url 'accounts:change_password' %}">Revenue</a> {% endcomment %}
+                    <a class="dropdown-item" href="{% url 'accounts:logout' %}">Logout</a>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar" id="sidebar">
+            <div class="slimScrollDiv">
+                <div class="sidebar-inner slimscroll">
+                    <div id="sidebar-menu" class="sidebar-menu">
+                        <ul>
+                            <li {% if not head_title or head_title == 'Admin Profile' or head_title == 'Change Password' %} class="active" {% endif %}>
+                                <a href="{% url 'frontend:index' %}" onclick="Loader()">
+                                    <i class="fas fa-bars"></i><span> Dashboard</span>
+                                </a>
+                            </li>
+                            </li>
+                            <li {% if head_title == "Buyers Management" or head_title == 'Buyer Profile' %} class="active" {% endif %}>
+                                <a href="{% url 'users:customers_list' %}" onclick="Loader()"><i class="fas fa-users"></i><span>Buyers</span></a>
+                            </li>
+                            <li {% if head_title == "Sellers Management" or head_title == 'Seller Profile' %} class="active" {% endif %}>
+                                <a href="{% url 'sellers:seller_list' %}" onclick="Loader()"><i class="fas fa-users"></i><span>Sellers</span></a>
+                            </li>
+
+                            {% comment %} <li class="submenu {% if head_title == "Subscription Plans Management" or head_title == "Event Booster Plan Management" %}active {% endif %}">
+                                <a href="javascript:void(0);"><i class="fas fa-credit-card-front"></i><span> Plans</span>
+                                    <span class="menu-arrow"></span>
+                                </a>
+                                <ul>
+                                    <li>
+                                        <a {% if head_title == 'Subscription Plans Management' %} class="active" {% endif %} href="{% url 'subscriptions:all_plans' %}" onclick="Loader()">
+                                            Subscription Plans
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a {% if head_title == 'Event Booster Plan Management' %} class="active" {% endif %} href="{% url 'subscriptions:all_booster_plans' %}" onclick="Loader()">
+                                            Event Booster Plans
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li> {% endcomment %}
+
+                            {% comment %} <li {% if head_title == "Subscription Plans Management"  %} class="active" {% endif %}>
+                                <a href="{% url 'subscriptions:all_plans' %}"><i class="fas fa-credit-card-front"></i><span>Plans</span></a>
+                            </li> {% endcomment %}
+
+                            {% comment %} <li {% if head_title == "Blog Management"  %} class="active" {% endif %}>
+                                <a href="{% url 'blog:blog_list' %}" onclick="Loader()"><i class="fas fa-blog"></i><span>Blogs</span></a>
+                            </li> {% endcomment %}
+                            <li {% if head_title == "Contact Us Management" %} class="active" {% endif %}>
+                                <a href="{% url 'contact_us:contactus_list' %}" onclick="Loader()"><i class="fas fa-address-book"></i><span>Contact Us</span></a>
+                            </li> 
+                            {% comment %} <li {% if head_title == "Banners Management" %} class="active" {% endif %}>
+                                <a href="{% url 'accounts:banners_list' %}" onclick="Loader()"><i class="fas fa-flag"></i><span>Banners</span></a>
+                            </li>  {% endcomment %}
+                            {% comment %} <li class="submenu {% if head_title == 'Events Management' or head_title == 'Category Management' %}active {% endif %}">
+                                <a href="javascript:void(0);"><i class="far fa-calendar-star"></i></i><span> Events</span>
+                                    <span class="menu-arrow"></span>
+                                </a>
+                                <ul>
+                                    <li>
+                                        <a {% if head_title == 'Category Management' %} class="active" {% endif %} href="{% url 'events:event_category_list' %}" onclick="Loader()">
+                                            Categories
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a {% if head_title == 'Events Management' %} class="active" {% endif %} href="{% url 'events:event_list' %}" onclick="Loader()">
+                                            Events
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li {% if head_title == "Bookings Management" %} class="active" {% endif %}>
+                                <a href="{% url 'events:bookings_list' %}" onclick="Loader()"><i class="fas fa-calendar-check"></i><span>Bookings</span></a>
+                            </li> 
+                            <li class="submenu {% if head_title == 'Subscription Transactions Management' or head_title == 'Events Booking Management' or head_title == 'Boosted Events Management' %}active {% endif %}">
+                                <a href="javascript:void(0);"><i class="fas fa-dollar-sign"></i><span> Transactions</span>
+                                    <span class="menu-arrow"></span>
+                                </a>
+                                <ul>    
+                                    <li>
+                                        <a {% if head_title == 'Subscription Transactions Management' %} class="active" {% endif %} href="{% url 'events:subscription_transaction_list' %}" onclick="Loader()">
+                                            Subscriptions
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a {% if head_title == 'Events Booking Management' %} class="active" {% endif %} href="{% url 'events:booking_transaction_list' %}" onclick="Loader()">
+                                            Event Bookings
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a {% if head_title == 'Boosted Events Management' %} class="active" {% endif %} href="{% url 'events:booster_transaction_list' %}" onclick="Loader()">
+                                            Boosted Events
+                                        </a>
+                                    </li>
+
+                                </ul>
+                            </li> {% endcomment %}
+                         
+                            {% comment %} <li {% if head_title == "Transactions Management" %} class="active" {% endif %}>
+                                <a href="{% url 'events:transaction_list' %}"><i class="fas fa-dollar-sign"></i><span>Transactions</span></a>
+                            </li>  {% endcomment %}
+
+                            <li class="submenu {% if head_title == "Login History" or head_title == 'Notifications Management' or head_title == 'Pages Management' or head_title == 'Backup Management' %}active {% endif %}">
+                                <a href="javascript:void(0);"><i class="fas fa-users-cog"></i><span> Settings</span>
+                                    <span class="menu-arrow"></span></a>
+                                <ul>
+                                    <li>
+                                        <a {% if head_title == 'Pages Management' %} class="active" {% endif %} href="{% url 'static_pages:pages_list' %}" onclick="Loader()">
+                                            Pages
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a {% if head_title == 'Backup Management' %} class="active" {% endif %} href="{% url 'backup:backup' %}" onclick="Loader()">
+                                            Backup
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a {% if head_title == 'Cronjob Management' %} class="active" {% endif %} href="{% url 'accounts:list_cronjob' %}" onclick="Loader()" >
+                                            Cronjobs
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a {% if head_title == 'Login History Management' %} class="active" {% endif %} href="{% url 'accounts:login_history' %}" onclick="Loader()">
+                                            Login History 
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a {% if head_title == 'Notifications Management' %} class="active" {% endif %} href="{% url 'accounts:notifications_list' request.user.id %}" onclick="Loader()">
+                                            Notifications
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a {% if head_title == 'FAQs Management' %} class="active" {% endif %} href="{% url 'static_pages:faq_list' %}" onclick="Loader()">
+                                            FAQs 
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a {% if head_title == 'SMTP Management' %} class="active" {% endif %} href="{% url 'credentials:smtp_list' %}" onclick="Loader()">
+                                            Smtp Settings 
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a {% if head_title == 'Stripe Management' %} class="active" {% endif %} href="{% url 'credentials:stripe_list' %}" onclick="Loader()">
+                                            Stripe Settings 
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a {% if head_title == 'Firebase Management' %} class="active" {% endif %} href="{% url 'credentials:firebase_credentials_list' %}" onclick="Loader()">
+                                            Firebase
+                                        </a>
+                                    </li>
+                                    {% comment %} <li>
+                                        <a {% if head_title == 'Logo Management' %} class="active" {% endif %} href="{% url 'accounts:logo' %}" onclick="Loader()">
+                                            Logo
+                                        </a>
+                                    </li> {% endcomment %}
+                                </ul>
+                            </li>
+                            <li class="submenu {% if head_title == 'Website Error Logs Management' or head_title == 'Email Logs Management' or head_title == 'Application Error Logs Management' %}active{% endif %}">
+                                <a href="javascript:void(0);"><i class="fas fa-exclamation-circle"></i><span> Logger</span>
+                                    <span class="menu-arrow"></span></a>
+                                <ul>
+                                    <li>
+                                        <a {% if head_title == 'Email Logs Management' %} class="active" {% endif %} href="{% url 'logger:email_logs_list' %}" onclick="Loader()">Email Logs</a>
+                                    </li>
+                                    <li>
+                                        <a {% if head_title == 'Website Error Logs Management' %} class="active" {% endif %} href="{% url 'logger:error_logs_list' %}" onclick="Loader()">Website Logs</a>
+                                    </li>
+                                    <li>
+                                        <a {% if head_title == 'Application Error Logs Management' %} class="active" {% endif %} href="{% url 'logger:crash_logs' %}" onclick="Loader()">Application Logs</a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>

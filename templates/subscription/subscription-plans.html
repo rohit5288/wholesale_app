@@ -1,0 +1,106 @@
+{% include "admin-includes/header.html" %}
+{% load static %}
+{% load extras %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Subscription Plans</h4>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+						<li class="breadcrumb-item"><a class="white-text" href="/">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a class="white-text" href="{% url 'subscriptions:all_plans' %}">Subscription Plans</a></li>
+					</ol>
+				</nav>
+            </div>
+            <div class="page-btn d-flex flex-wrap">
+				<a class="btn btn-primary me-2" href="{% url 'subscriptions:add_default_plan' %}"><i class="fas fa-plus ms-1"></i>
+                    Add Default Subscription</a>
+                <a class="btn btn-primary" href="{% url 'subscriptions:add_subscription_plan' %}"><i class="fas fa-plus ms-1"></i>
+                    Subscription</a>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="dataview">
+                    <form onsubmit="Loader()" action="{% url 'subscriptions:all_plans' %}" method="GET">
+						<div class="table-responsive">
+							<table class="table datatable">
+								<thead>
+									<tr>
+										<th><strong>Plan Title</strong></th>
+										{% comment %} <th><strong>Validity</strong></th> {% endcomment %}
+										<th style="max-width: 100px;"><strong>Price</strong></th>
+										<th><strong>Created On</strong></th>
+										<th><strong>Actions </strong></th>
+									</tr>
+								</thead>
+								<thead>
+									<tr class="search-row">
+										<td>
+											<input type="text" value="{{title}}" class="form-control" name="title" maxlength="100">
+										</td>
+										
+										{% comment %} <td>
+											<select class="form-control" name="plan_type" onchange="this.form.submit()">
+												<option  value=""></option>
+												<option {% if plan_type == '1' %} selected {% endif %} value="1">Monthly</option>
+												<option {% if plan_type == '2' %} selected {% endif %} value="2">Yearly</option>
+											</select>
+										</td> {% endcomment %}
+										<td><input type="text" value="{{price}}" class="form-control" name="price" maxlength="20"></td>
+										<td><input type="date" value="{{created_on}}" class="position-relative form-control" onchange="this.form.submit()" name="created_on"></td>
+										<td><button type="submit" class="btn btn-primary ms-2">Search</button></td>
+									</tr>
+								</thead>
+								<tbody>
+									{% if plans %}
+										{% for plan in plans %}
+										<tr>
+											<td class='clickable-row' data-href="{% url 'subscriptions:view_plan' plan.id %}">
+												<strong>
+                                                    {{plan.title}} [{% if plan.validity == 1 %}Monthly{% else %}Yearly{% endif %}]
+												</strong>
+											</td>
+											
+											{% comment %} <td class='clickable-row' data-href="{% url 'subscriptions:view_plan' plan.id %}">
+												{% if plan.validity == 1 %}
+												<span class="badge bg-dark">MONTHLY</span>
+												{% else %}
+												<span class="badge bg-secondary">YEARLY</span>
+												{% endif %}
+											</td> {% endcomment %}
+											<td class='clickable-row' data-href="{% url 'subscriptions:view_plan' plan.id %}">$ {{plan.price|floatformat:0}}</td>
+											<td class='clickable-row' data-href="{% url 'subscriptions:view_plan' plan.id %}">
+												<script>
+													var date = ConvertDateTime("{{ plan.created_on|date:'Y-m-d' }}", "{{ plan.created_on|time:'H:i' }}");
+													document.write(date);
+												</script>
+											</td>
+											<td>
+												<div class="d-flex">
+													<a title="View Plan" href="{% url 'subscriptions:view_plan' plan.id %}"
+														id="update-btn" class="btn btn-success shadow btn-xs sharp me-1">
+														<i class="fa fa-eye"></i>
+													</a>
+													<a title="Edit Plan" href="{% url 'subscriptions:edit_plan' plan.id %}"
+														id="update-btn" class="btn btn-warning shadow btn-xs sharp me-1">
+														<i class="fa fa-edit"></i>
+													</a>
+													<a style="margin-right:5px" href="{% url 'subscriptions:delete_plan' plan.id %}" message="Are you sure you want to delete this page?" class="btn btn-danger shadow btn-xs sharp action_confirm" ><i class="fa fa-trash"></i></a>
+
+												</div>
+											</td>
+										</tr>
+										{% endfor %}
+									{% endif %}
+								</tbody>
+							</table>
+						</div>
+					</form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% include "admin-includes/footer.html" %}

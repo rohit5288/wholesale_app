@@ -1,0 +1,102 @@
+{% include 'admin-includes/header.html' %}
+{% load static %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>FAQs</h4>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a class="white-text" href="/">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'static_pages:faq_list' %}" class="white-text">FAQs</a></li>
+                        <li class="breadcrumb-item active">Add FAQ</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="page-btn d-flex flex-wrap">
+                <a class="btn btn-secondary" href="{% url 'static_pages:faq_list' %}" ><i class="fa fa-angle-left me-1"></i> Back</a>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <form onsubmit="Loader(this.id)" id="add-faq" action="{% url 'static_pages:add_faq' %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-12">
+                            <div class="form-group required-field">
+                                <label class="form-label">Question</label>
+                                <input type="text" placeholder="Enter Question" name="question" class="form-control" maxlength="254">
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-12">
+                            <div class="form-group required-field ">
+                                <label class="form-label">Answer</label>
+                                <textarea  placeholder="Enter Answer" name="answer" id="content" class="form-control"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 text-end">
+                            <button type="submit" class="btn btn-primary me-2">Save</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% include 'admin-includes/footer.html' %}
+<script src="https://cdn.ckeditor.com/4.17.2/standard/ckeditor.js"></script>
+<script src="{% static 'admin-assets/js/ckeditor-validation.js' %}"></script>
+
+<script>
+    CKEDITOR.replace('content',{
+        disallowedContent: 'img'
+    });
+</script>
+
+
+<script type="text/javascript">
+    // validation for max length
+    jQuery.validator.addMethod("ck_maxlength", function (value, element) {  
+        var idname = $(element).attr('id');  
+        var editor = CKEDITOR.instances[idname];  
+        var ckValue = GetTextFromHtml(editor.getData()).replace(/<[^>]*>/gi, '').trim();
+        if (ckValue.length === 0 ) {    
+            $(element).val(ckValue);
+        }else {  
+            $(element).val(editor.getData());
+        }
+        console.log($(element).val().split(" ").length)
+        return $(element).val().split(" ").length < 500;
+    }, "Only 500 words allowed!");  
+
+    $("#add-faq").validate({
+        ignore: [],
+        rules: {
+            question: {
+                required: true,
+                normalizer: function (value) {
+                    return $.trim(value);
+                }
+            },
+            answer: {
+                ckrequired:true,
+                ck_maxlength:true
+            }
+        },
+        messages: {
+            question: {
+                required: "Please enter question",
+            },
+            answer: {
+                ckrequired: "Please enter answer",
+            }
+        },
+        errorPlacement: function (error, element) {
+            if (element.attr("name") == "answer") {
+                error.insertAfter("#cke_content");
+            } else {
+                error.insertAfter(element);
+            }
+        }
+    });    
+</script>

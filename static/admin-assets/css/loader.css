@@ -1,0 +1,135 @@
+#loading {
+    border-radius: 50%;
+    z-index: 9999999999999;
+    pointer-events: none !important;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: #00000057;
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    color: #fff;
+    justify-content: center;
+}
+
+#loading i {
+    position: relative;
+    z-index: 999999;
+    font-size: 80px;
+    color: #fff;
+}
+
+#loading i {
+    animation: spin 1s ease-in-out infinite;
+    -webkit-animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@-webkit-keyframes spin {
+    to {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+/*  for loader image  based on project */
+
+
+.maindiv {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    position: fixed;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.54);
+    top: 0;
+    left: 0;
+    z-index: 9999999999999;
+  }
+  
+  .maindiv .logoname {
+    width: 190px;
+  }
+  
+  .maindiv .loadericon {
+    position: relative;
+    height: 100px;
+    width: 100px;
+    margin: auto;
+  }
+  
+  .maindiv .loadericon .icon {
+    position: absolute;
+    top: 47%;
+    left: 51%;
+    transform: translate(-50%, -50%);
+    background:#10121a;
+    border-radius: 50%;
+    padding: 1rem;
+    width: 70px;
+    height: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .maindiv .loadericon .icon img {
+    width: 50px;
+    /* filter: brightness(0) invert(1); */
+  }
+  
+  .maindiv .loadericon .outerCircle {
+    background-color: transparent;
+    border: 3px solid #31a8f6;
+    opacity: 0.9;
+    border-left: 3px solid rgba(0, 0, 0, 0.54);
+    border-radius: 50%;
+    top: 0;
+    width: 93px;
+    height: 93px;
+    margin: 0 auto;
+    position: relative;
+    -moz-animation: spinoffPulse 3s infinite linear;
+    -webkit-animation: spinoffPulse 3s infinite linear;
+  }
+  
+  @-moz-keyframes spinoffPulse {
+    0% {
+      -moz-transform: rotate(0deg);
+    }
+  
+    100% {
+      -moz-transform: rotate(360deg);
+    }
+  }
+  
+  @-webkit-keyframes spinoffPulse {
+    0% {
+      -webkit-transform: rotate(0deg);
+    }
+  
+    100% {
+      -webkit-transform: rotate(360deg);
+    }
+  }
+  
+  @keyframes spinoffPulse {
+    0% {
+      -webkit-transform: rotate(0deg);
+    }
+  
+    100% {
+      -webkit-transform: rotate(360deg);
+    }
+  }

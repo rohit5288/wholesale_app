@@ -1,0 +1,15 @@
+{
+    "apps": [
+        {
+            "name": "body_measurement_pm2",
+            "script": "manage.py",
+            "args": ["runserver", "0:30059"],
+            "exec_mode": "fork",
+            "instances": "1",
+            "wait_ready": true,
+            "autorestart": true,
+            "max_restarts": 5,
+            "interpreter" : "python3"
+        }
+    ]
+}

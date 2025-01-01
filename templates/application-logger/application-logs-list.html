@@ -1,0 +1,102 @@
+{% include "admin-includes/header.html" %}
+{% load static %}
+{% load extras %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Application Error Logs</h4>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">Index</li>
+                        <li class="breadcrumb-item"><a class="white-text" href="{% url 'logger:crash_logs' %}">Application Error Logs</a>
+                        </li>    
+                    </ol>
+                </nav>
+            </div>
+            <div class="page-btn">
+                <a title='Delete All Logs' class="btn btn-danger action_confirm" message="Are you sure you want to clear Error Logs?"  href="{% url 'logger:delete_all_crash_logs' %}"><i class="fas fa-trash-alt"></i></a></a>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="dataview">
+                    <div class="table-responsive ">
+                        <table class="table datatable">
+                            <thead>
+                                <tr>
+                                    <th><strong>Error</strong></th>
+                                    <th><strong>Link</strong></th>
+                                    <th><strong>Referrer Link</strong></th>
+                                    <th><strong>User IP</strong></th>
+                                    <th><strong>Created On</strong></th>
+                                    <th><strong>Action</strong></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if logs %}
+                                {% for log in logs %}
+                                <tr>
+                                    <td class='clickable-row' data-href="{% url 'logger:view_crash_log' log.id %}">{{log.error}}</td>
+                                    <td class='clickable-row' data-href="{% url 'logger:view_crash_log' log.id %}">{{log.link|truncatechars:50}}</td>
+                                    <td class='clickable-row' data-href="{% url 'logger:view_crash_log' log.id %}">{{log.referer_link|truncatechars:50}}</td>
+                                    <td class='clickable-row' data-href="{% url 'logger:view_crash_log' log.id %}">{{log.user_ip|truncatechars:50}}</td>
+                                    <td class='clickable-row' data-href="{% url 'logger:view_crash_log' log.id %}">
+                                        <script>
+                                            var date = ConvertDateTime("{{ log.created_on|date:'Y-m-d' }}", "{{ log.created_on|time:'H:i' }}");
+                                            document.write(date);
+                                        </script>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <a title='View Logs' style="margin-right:5px" href="{% url 'logger:view_crash_log' log.id %}" class="btn btn-success shadow btn-xs sharp"><i class="fa fa-eye"></i></a>
+                                            <a title='Delete Logs' style="margin-right:5px" onclick="return confirm('Are you sure to delete this error log?')" href="{% url 'logger:delete_crash_log' log.id %}" class="btn btn-danger shadow btn-xs sharp"><i class="fa fa-trash"></i></a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% if logs.has_other_pages %}
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                            {% if logs.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?{% url_replace request 'page' logs.previous_page_number %}">&laquo;</a>                                          
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">&laquo;</span>
+                                </li>
+                            {% endif %}
+                            {% for i in logs.paginator.page_range %}
+                                {% if logs.number == i %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ i }} <span class="sr-only">(current)</span></span>
+                                    </li>
+                                {% elif i > logs.number|add:'-5' and i < logs.number|add:'5' %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?{% url_replace request 'page' i %}">{{ i }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            {% if logs.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?{% url_replace request 'page' logs.next_page_number %}">&raquo;</a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">&raquo;</span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% include "admin-includes/footer.html" %}

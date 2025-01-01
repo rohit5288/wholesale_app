@@ -1,0 +1,105 @@
+{% include "admin-includes/header.html" %}{% load static %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>SMTP Information</h4>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a class="white-text" href="/">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'credentials:smtp_list' %}"
+                                class="white-text">SMTP Setting</a></li>
+                        <li class="breadcrumb-item active">View SMTP Detail</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="page-btn d-flex flex-wrap">
+               
+                <a href="{% url 'credentials:edit_smtp' smtp.id %}" class="btn btn-info shadow btn-xs sharp me-1"><i class="fa fa-edit"></i></a>
+                <a style="margin-right:5px" href="{% url 'credentials:delete_smtp' smtp.id %}" message="Are you sure you want to delete this smtp detail?" class="btn btn-danger shadow btn-xs sharp action_confirm" ><i class="fa fa-trash"></i></a>
+                <a class="btn btn-secondary" href="{% url 'credentials:smtp_list' %}"><i class="fa fa-angle-left me-1"></i> Back</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 col-lg-12 col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="productdetails">
+                            <ul class="product-bar">
+
+                                <li>
+                                    <h4>Email Backend </h4>
+                                    <h6><b>{{smtp.email_backend}}</b></h6>
+                                </li>
+
+
+                                <li>
+                                    <h4>Email Host </h4>
+                                    <h6><b>{{smtp.email_host}}</b></h6>
+                                </li>
+
+                                <li>
+                                    <h4>Email Port </h4> 
+                                    <h6><b>{{smtp.email_port}}</b></h6>
+                                </li>
+
+
+                                <li>
+                                    <h4>Use TLS </h4>
+                                    <h6>
+                                        {% if smtp.use_tls == 1 %}
+                                            <span class="badge bg-success">True</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">False</span>
+                                        {% endif %}
+                                    </h6>
+                                </li>
+                                <li>
+                                    <h4>Host Email </h4> 
+                                    <h6><b>{{smtp.email_host_user}}</b></h6>
+                                </li>
+
+                                <li>
+                                    <h4>Email Host Password </h4> 
+                                    <h6><b>{{smtp.email_host_password}}</b></h6>
+                                </li>
+
+                                <li>
+                                    <h4>Is Active </h4> 
+                                    <h6>
+                                        {% if smtp.is_active %}
+                                        <span style='cursor:pointer' class="badge bg-success active_deactive" message="Are you sure you want to deactivate?" action='DeActivate' href="{% url 'credentials:active_deactive_smtp' smtp.id %}">Active</span>
+                                        {% else %}
+                                        <span style='cursor:pointer' class="badge bg-warning active_deactive" message="Are you sure you want to activate?" action='Activate' href="{% url 'credentials:active_deactive_smtp' smtp.id %}" >InActive</span>
+                                        {% endif %}
+                                    </h6>
+                                </li>
+
+                                {% if  smtp.created_on %}
+                                <li>
+                                    <h4>Created On </h4>
+                                    <h6>
+                                        <script>
+                                            var date = ConvertDateTime("{{ smtp.created_on|date:'Y-m-d' }}", "{{ smtp.created_on|time:'H:i' }}");
+                                            document.write(date);
+                                        </script>
+                                    </h6>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="btn-list border-0 d-flex justify-content-end align-items-center mt-4">
+                {% if smtp.is_active %}
+                <a href="{% url 'credentials:active_deactive_smtp' smtp.id %}" action="DeActivate" message="Are you sure you want to deactivate?" class="btn btn-danger active_deactive">DEACTIVATE</a>
+                {% else %}
+                <a href="{% url 'credentials:active_deactive_smtp' smtp.id %}" action="Activate" message="Are you sure you want to activate?" class="btn btn-success active_deactive">ACTIVATE</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include "admin-includes/footer.html" %}

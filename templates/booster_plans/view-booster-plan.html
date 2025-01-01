@@ -1,0 +1,246 @@
+{% include "admin-includes/header.html" %}
+{% load static %}
+{% load extras %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Booster Plan Information</h4>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item">Index</li>
+                        <li class="breadcrumb-item"><a class="white-text"
+                                href="{% url 'subscriptions:all_booster_plans' %}">Booster Plans</a>
+                        </li>
+                        <li class="breadcrumb-item active">View Booster Plan</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="page-btn d-flex">
+                <a class="btn btn-secondary" href="{% url 'subscriptions:all_booster_plans' %}"><i class="fa fa-angle-left me-1"></i> Back</a>
+            </div>
+        </div>
+        <div class="">
+            <div class="col-md-12 col-lg-12 col-sm-12">
+            
+                <div class="card">
+                    <div class="card-body">
+                        <div class="productdetails">
+                            <ul class="product-bar">
+                                <li>
+                                    <h4>Plan Id </h4>
+                                    <h6><b>{{plan.id}}</b></h6>
+                                </li>
+                                <li>
+                                    <h4>Plan Name </h4>
+                                    <h6>
+                                        <b>
+                                           {{plan.title}}
+                                        </b>
+                                    </h6>
+                                </li>
+                                
+                                <li>
+                                    <h4>Validity</h4>
+                                    <h6>
+                                        <b>{{plan.days}} days </b>
+                                    </h6>
+                                </li>
+                                <li>
+                                    <h4>Price</h4>
+                                    <h6><b>$ {{plan.price|floatformat:1}}</b></h6>
+                                </li>
+                                <li>
+                                    <h4>Created On </h4>
+                                    <h6>
+                                        <b><script>
+                                            var date = ConvertDateTime("{{ plan.created_on|date:'Y-m-d' }}", "{{ plan.created_on|time:'H:i' }}");
+                                            document.write(date);
+                                        </script></b>
+                                    </h6>
+                                </li>
+                                <li>
+                                    <h4>Updated On </h4>
+                                    <h6>
+                                        <b><script>
+                                            var date = ConvertDateTime("{{ plan.updated_on|date:'Y-m-d' }}", "{{ plan.updated_on|time:'H:i' }}");
+                                            document.write(date);
+                                        </script></b>
+                                    </h6>
+                                </li>
+                                <li>
+                                    <h4>Plan Features</h4>
+                                    <h6>
+                                        {% if plan.features %}
+                                        <ul class="custom-li">
+                                            <b>{{plan.features|safe}}</b>
+                                        </ul>
+                                        {% else %}-{% endif %}
+                                    </h6>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                {% comment %} <div class="card mt-5">
+                    <div class="card-body">
+                        <div class=" dataview">
+                            <form onsubmit="Loader()" action="{% url 'subscriptions:view_plan' plan.id%}"  method="GET">
+                                <div class="table-responsive">
+                                    <table class="table datatable">
+                                        <thead>
+                                            <tr>
+                                                <th><strong>Transaction Id</strong></th>
+                                                <th><strong>Subscription Plan</strong></th>
+                                                <th><strong>Amount </strong></th>
+                                                <th><strong>Payment Status </strong></th>
+                                                <th><strong>Created On </strong></th>
+                                                <th><strong>Actions </strong></th>
+                                            </tr>
+                                        </thead>
+                                        <thead>
+                                            <tr class="search-row">
+                                                <td><input type="text" value="{% if transaction_id %}{{transaction_id}}{% endif %}" class="form-control" name="transaction_id" maxlength="50"></td>
+                                                <td><select class="form-control" name="subscription_plan" onchange="this.form.submit()">
+                                                        <option  value="">Select</option>
+                                                        <option {% if subscription_plan == '1' %} selected {% endif %} value="1">Free Subscription</option>
+                                                        <option {% if subscription_plan == '2' %} selected {% endif %} value="2">Silver Subscription</option>
+                                                        <option {% if subscription_plan == '3' %} selected {% endif %} value="3">Gold Subscription</option>
+                                                    </select>
+                                                </td>
+                                                <td><input type="text" value="{% if amount %}{{amount}}{% endif %}" class="form-control" name="amount" maxlength="20"></td>
+                                                <td>
+                                                    <select class="form-control" name="payment_status" onchange="this.form.submit()">
+                                                        <option  value="">Select</option>
+                                                        <option {% if payment_status == '1' %} selected {% endif %} value="1">Success</option>
+                                                        <option {% if payment_status == '2' %} selected {% endif %} value="2">Fail</option>
+                                                    </select>
+                                                </td>
+                                                <td><input type="date" value="{% if created_on %}{{created_on}}{% endif %}" class="position-relative form-control" onchange="this.form.submit()" name="created_on"></td>
+                                                <td><button type="submit" class="btn btn-primary">Search</button></td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% if transactions %}
+                                                {% for transaction in transactions %}
+                                                <tr>
+                                                    <td class='clickable-row' {% if request.user.is_superuser %} data-href="{% url 'subscriptions:view_transaction_history' transaction.id %}" {% else %} data-href="{% url 'business_users:view_payment_history' transaction.id %}" {% endif %}>
+                                                        <div class="d-flex align-items-center display-images">
+                                                            {% if transaction.transaction_id %}
+                                                            <span class="w-space-no">{{ transaction.transaction_id }}</span>
+                                                            {% else %}
+                                                            <span class="w-space-no">-</span>
+                                                            {% endif %}
+                                                        </div>
+                                                    </td>
+                                                    <td class='clickable-row' {% if request.user.is_superuser %} data-href="{% url 'subscriptions:view_transaction_history' transaction.id %}" {% else %} data-href="{% url 'business_users:view_payment_history' transaction.id %}" {% endif %}>
+                                                        <div class="d-flex align-items-center display-images">
+                                                            {% if transaction.subscription_plan %}
+                                                                {% if  transaction.subscription_plan.subscription_type == 1 %}
+                                                                        <span class="badge bg-success">FREE SUBSCRIPTION</span>
+                                                                {% elif  transaction.subscription_plan.subscription_type == 2 %}
+                                                                        <span class="badge bg-warning">SILVER SUBSCRIPTION</span>        
+                                                                {% else %}
+                                                                        <span class="badge bg-danger">GOLD SUBSCRIPTION</span>        
+                                                                {% endif %}        
+                                                            {% else %}
+                                                            <span class="w-space-no">-</span>
+                                                            {% endif %}
+                                                        </div>
+                                                    </td>
+                                                    <td class='clickable-row' {% if request.user.is_superuser %} data-href="{% url 'subscriptions:view_transaction_history' transaction.id %}" {% else %} data-href="{% url 'business_users:view_payment_history' transaction.id %}" {% endif %}>
+                                                        <div class="d-flex align-items-center display-images">
+                                                            {% if transaction.amount %}
+                                                                <span class="w-space-no">{{transaction.amount}}</span>
+                                                            {% endif %}    
+                                                        </div>
+                                                    </td>
+                                                    <td class='clickable-row' {% if request.user.is_superuser %} data-href="{% url 'subscriptions:view_transaction_history' transaction.id %}" {% else %} data-href="{% url 'business_users:view_payment_history' transaction.id %}" {% endif %}>
+                                                        <div class="d-flex align-items-center display-images">
+                                                            {% if transaction.payment_status == 1 %}
+                                                                <span class="badge bg-success">Success</span>
+                                                            {% else %}
+                                                                <span class="badge bg-danger">Fail</span> 
+                                                            {% endif %}    
+                                                        </div>
+                                                    </td>
+
+                                                    <td class='clickable-row' {% if request.user.is_superuser %} data-href="{% url 'subscriptions:view_transaction_history' transaction.id %}" {% else %} data-href="{% url 'business_users:view_payment_history' transaction.id %}" {% endif %}>
+                                                        <span class="w-space-no">
+                                                        <script>
+                                                            var date = ConvertGDateTime("{{ transaction.created_on|date:'Y-m-d' }}", "{{ transaction.created_on|time:'H:i' }}");
+                                                            document.write(date);
+                                                        </script>
+                                                        </span>
+                                                    </td>
+                                                    <td >
+                                                        <div class="d-flex">
+                                                            {% if request.user.is_superuser %}
+                                                            <a title="View Details" href="{% url 'subscriptions:view_transaction_history' transaction.id %}"
+                                                                id="update-btn" class="btn btn-success shadow btn-xs sharp me-1">
+                                                                <i class="fa fa-eye"></i>
+                                                            </a>
+                                                            {% else %}
+
+                                                            <a title="View Details" href="{% url 'business_users:view_payment_history' transaction.id %}"
+                                                                id="update-btn" class="btn btn-success shadow btn-xs sharp me-1">
+                                                                <i class="fa fa-eye"></i>
+                                                            </a>
+                                                            {% endif %}
+
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </form>
+                            {% if transactions.has_other_pages %}
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination">
+                                        {% if transactions.has_previous %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?{% url_replace request 'page' transactions.previous_page_number %}">&laquo;</a>                                          
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item disabled">
+                                                <span class="page-link">&laquo;</span>
+                                            </li>
+                                        {% endif %}
+                                        {% for i in transactions.paginator.page_range %}
+                                            {% if transactions.number == i %}
+                                                <li class="page-item active">
+                                                    <span class="page-link">{{ i }} <span class="sr-only">(current)</span></span>
+                                                </li>
+                                            {% elif i > transactions.number|add:'-5' and i < transactions.number|add:'5' %}
+                                                <li class="page-item">
+                                                    <a class="page-link" href="?{% url_replace request 'page' i %}">{{ i }}</a>
+                                                </li>
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% if transactions.has_next %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?{% url_replace request 'page' transactions.next_page_number %}">&raquo;</a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item disabled">
+                                                <span class="page-link">&raquo;</span>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                </nav>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div> {% endcomment %}
+
+            </div>
+        </div>
+    </div>
+</div>
+{% include "admin-includes/footer.html" %}

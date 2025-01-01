@@ -1,0 +1,102 @@
+{% include 'admin-includes/header.html' %}
+{% load static %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Pages</h4>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a class="white-text" href="/">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'static_pages:pages_list' %}" class="white-text">Pages</a></li>
+                        <li class="breadcrumb-item active">Add Page</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="page-btn d-flex flex-wrap">
+                <a class="btn btn-secondary" href="{% url 'static_pages:pages_list' %}" ><i class="fa fa-angle-left me-1"></i> Back</a>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <form onsubmit="Loader(this.id)" id="add-page" action="{% url 'static_pages:add_page' %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6 col-12">
+                            <div class="form-group required-field">
+                                <label class="form-label">Title</label>
+                                <input type="text" placeholder="Enter Title" name="title" class="form-control" maxlength="254">
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-12">
+                            <div class="form-group required-field">
+                                <label class="form-label">Type</label>
+                                <select name="type_id" id="type_id" required class="form-control">
+                                    <option value="">Select</option>
+                                    <option value="1">Terms & Conditions</option>
+                                    <option value="2">Privacy Policy</option>
+                                    <option value="3">About Us</option>
+                                    <option value="4">How it Works</option>
+                                    <option value="5">Cookie Policy</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-12">
+                            <div class="form-group required-field">
+                                <label class="form-label">Description</label>
+                                <textarea placeholder="Enter Description" name="content" id="content" class="form-control"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 text-end">
+                            <button type="submit" class="btn btn-primary me-2">Save</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% include 'admin-includes/footer.html' %}
+<script src="https://cdn.ckeditor.com/4.17.2/standard/ckeditor.js"></script>
+<script>
+    CKEDITOR.replace('content',{
+        disallowedContent:'img'
+    });
+</script>
+<script type="text/javascript">
+    $("#add-page").validate({
+        ignore:[],
+        rules: {
+            type_id: {
+                required: true,
+            },
+            title: {
+                required: true,
+                normalizer: function (value) {
+                    return $.trim(value);
+                }
+            },
+            content: {
+               ckrequired: true
+            }
+        },
+        messages: {
+            type_id: {
+                required: "Please select type of page",
+            },
+            title: {
+                required: "Please enter title",
+            },
+            content: {
+                ckrequired: "Please enter description"
+            }
+        },
+        errorPlacement: function (error, element) {
+            if (element.attr("name") == "content") {
+                error.insertAfter("#cke_content");
+            } else {
+                error.insertAfter(element);
+            }
+        }
+    });    
+</script>

@@ -1,0 +1,47 @@
+{% load static %}{% include 'registration/includes/header.html' %}
+<div class="login">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="form-section">
+                    <div class="logo-2 mb-0">
+                        <a href="{% url 'frontend:index' %}" class="login-logo mb-0">
+                            <img src="{% static 'admin-assets/images/logo.png' %}" alt='logo'>
+                        </a>
+                    </div>
+                    <h3>Sign In to Your Account</h3>
+                    <form id="login" onsubmit="Loader(this.id)" action="{% url 'accounts:login' %}" method="POST" class="mt-30">
+                        {% csrf_token %}
+                        <div class="form-group form-box required-field">
+                            <label class="form-label">Email Address</label>
+                            <div class="form-addons">
+                                <input type="text" class="form-control" placeholder="Enter your email address" name="username" {% if username %}value="{{username}}"{% endif %}> 
+                            </div>
+                        </div>
+                        <div class="form-group form-box required-field">
+                            <label class="form-label">Password</label>
+                            <div class="pass-group">
+                                <input type="password" class="form-control" id = "password" name="password" class="pass-input" autocomplete="on" placeholder="Enter your password" {% if password %}value="{{password}}"{% endif %}>
+                                <span onclick="changetype()" class="fas toggle-password fa-eye-slash"></span>
+                            </div>
+                        </div>
+                        <div class="form-group my-4 clearfix">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="remember_me" id="remember_me"/>
+                                <label class="form-check-label" for="remember_me" style="cursor:pointer;">Remember Me</label>
+                            </div>
+                            <a href="{% url 'accounts:forgot_password_email' %}" class="forgot-password">Forgot Password?</a>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-login btn-theme w-100">Sign In</button>
+                        </div>
+                        
+                    </form>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'registration/includes/footer.html' %}

@@ -1,0 +1,56 @@
+{% load static %}
+{% include 'registration/includes/header.html' %}
+<div class="account-content">
+    <div class="login-wrapper row m-0">
+        <div class="col-lg-6 bg_img_colm">
+            <div class="login-content">
+                <div class="logo_auth">
+                    <a href="{% url 'frontend:index' %}" class="login-logo">
+                        <img src="{% static 'admin-assets/images/log.png' %}">
+                    </a>
+                </div>
+                <div class="login-userset">
+                    {% csrf_token %}
+                    <div class="login-userheading">
+                        <h3>Enter OTP</h3>
+                        <h4>Don’t worry! it happens. Please enter the address associated with your account.</h4>
+                    </div>
+                    <form action="" class="otp-input">
+                        <input class="otp" type="text" oninput='digitValidate(this)' onkeyup='tabChange(1)' maxlength=1>
+                        <input class="otp" type="text" oninput='digitValidate(this)' onkeyup='tabChange(2)' maxlength=1>
+                        <input class="otp" type="text" oninput='digitValidate(this)' onkeyup='tabChange(3)' maxlength=1>
+                        <input class="otp" type="text" oninput='digitValidate(this)' onkeyup='tabChange(4)' maxlength=1>
+                    </form>
+                    <div class="form-login">
+                        <button type="submit" class="btn btn-login mt-3">Verify OTP</button>
+                    </div>
+                    <p class="text-center"><a href="{% url 'accounts:login' %}">Back to Sign In</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="welcome_wrapp">
+                <div class="waviy">
+                    <span style="--i:1">W</span>
+                    <span style="--i:2">e</span>
+                    <span style="--i:3">l</span>
+                    <span style="--i:4">c</span>
+                    <span style="--i:5">o</span>
+                    <span style="--i:6">m</span>
+                    <span style="--i:7">e</span>
+                    <span  class="ms-3" style="--i:8">t</span>
+                    <span class="me-3" style="--i:9">o</span>
+                    <span class="color-yellow " style="--i:10">S</span>
+                    <span class="color-yellow " style="--i:11">P</span>
+                    <span class="color-yellow " style="--i:12">L</span>
+                    <span class="color-yellow " style="--i:13">U</span>
+                    <span class="color-yellow " style="--i:14">R</span>
+                    <span class="color-yellow " style="--i:15">G</span>
+                    <span class="color-yellow " style="--i:15">E</span>
+                </div>
+                <p>Die erste Social Media Plattform für Lehrer*innen</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% include 'registration/includes/footer.html' %}

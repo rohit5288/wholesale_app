@@ -1,0 +1,67 @@
+<footer class="footer-mobile-ml">{% load static %}
+    <div class="copyright-footer">
+        <p class="mb-0 text-center">Copyright  © <span id="full_year"></span><a href="{% url 'frontend:index' %}"> Sheoran </a>
+        </p>
+    </div>
+</footer>
+</div>
+</div>
+<script src="{% static 'admin-assets/js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'admin-assets/js/bootstrap4.min.js' %}"></script>
+<script src="{% static 'admin-assets/js/jquery.fancybox.min.js' %}"></script>
+<script src="{% static 'admin-assets/js/jquery.slimscroll.min.js' %}"></script>
+<script src="{% static 'admin-assets/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'admin-assets/js/dataTables.bootstrap4.min.js' %}"></script>
+<script src="{% static 'admin-assets/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'admin-assets/js/script.js' %}"></script>
+<script src="{% static 'admin-assets/js/validate.js' %}"></script>
+<script src="{% static 'admin-assets/js/additional-methods.min.js' %}"></script>
+<script src="{% static 'admin-assets/js/selectize.min.js' %}"></script>
+<script src="{% static 'admin-assets/js/selectize_no_results.js' %}"></script>
+<script src="{% static 'admin-assets/js/jquery-ui.min.js' %}"></script>
+<script src="{% static 'admin-assets/js/highcharts.src.js' %}"></script>
+<script src="{% static 'admin-assets/js/intlTelInput-jquery.min.js' %}"></script>
+<script src="{% static 'admin-assets/js/sweetalert.js' %}"></script>
+<script src="{% static 'admin-assets/js/customized-js/sweet-alerts.js' %}"></script>
+<script src="{% static 'admin-assets/js/ckeditor-validation.js' %}"></script>
+<script src="{% static 'admin-assets/js/swiper-js/swiper-bundle.min.js' %}"></script>
+<script src="{% static 'admin-assets/js/swiper.js' %}"></script>
+<script src="{% static 'admin-assets/js/customized-js/common.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.0/dist/sweetalert2.all.min.js"></script>
+</body>
+</html>
+<script>
+    (function () {
+        window.onpageshow = function(event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        };
+    })();
+    function Loader(formID) {
+        loader_html = `
+        <div class="maindiv">
+            <div>
+                <div class="loadericon">
+                    <div class="outerCircle"></div>
+                        <div class="icon logoname">
+                            <img alt="" width="10" src="{% static "admin-assets/images/favicon.ico" %}" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        `
+        if ($('#'+formID).length){
+            if ($('#'+formID).valid()){
+                $('body').append(loader_html);
+                $('body').css('pointer-events','none');
+                $('.btn').css('pointer-events','none');
+            }
+        }else{
+            $('body').append(loader_html);
+            $('body').css('pointer-events','none');
+            $('.btn').css('pointer-events','none');
+        }
+    }
+</script>

@@ -1,2 +1,1 @@
-# wholesale_app
-WholeSale App
+<h1>My ProjectName</h1>

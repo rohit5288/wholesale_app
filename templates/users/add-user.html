@@ -1,0 +1,241 @@
+{% include 'admin-includes/header.html' %}
+{% load static %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Buyers</h4>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a class="white-text" href="/">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'users:customers_list' %}" class="white-text">Buyers</a></li>
+                        <li class="breadcrumb-item active">Add Buyer</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="page-btn d-flex flex-wrap">
+                <a class="btn btn-secondary" href="{% url 'users:customers_list' %}" ><i class="fa fa-angle-left me-1"></i> Back</a>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <form onsubmit="return CheckAddress(this.id)" id="add-user" action="{% url 'users:add_user' %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-lg-4 col-md-4 col-12">
+                            <div class="form-group required-field">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" placeholder="Enter Full Name" name="full_name" class="form-control" maxlength="254">
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-12">
+                            <div class="form-group required-field">
+                                <label class="form-label">Email</label>
+                                <input type="email" placeholder="Enter Email" name="email" class="form-control" maxlength="254">
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-12">
+                            <div class="form-group required-field">
+                                <label class="form-label">Mobile No</label>
+                                <input type="text" placeholder="Enter Mobile No" onkeypress="return /[0-9]/i.test(event.key)" name="mobile_no" maxlength="10" class="form-control" maxlength="254">
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-12">
+                            <div class="form-group required-field">
+                                <label class="form-label">Gender</label>
+                                <select name="gender" id="gender" required class="form-control">
+                                    <option value="">Select</option>
+                                    <option value="1">Male</option>
+                                    <option value="2">Female</option>
+                                    <option value="3">Others</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-12">
+                            <div class="form-group required-field">
+                                <label class="form-label">Address</label>
+                                <input type="text" placeholder="Enter Address" maxlength="500" name="address" id="address" class="form-control">
+                                <input type="hidden" name="latitude" id="latitude" >
+                                <input type="hidden" name="longitude" id="longitude">
+                                <span class="edit-details-error error" ></span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-12">
+                            <div class="form-group required-field">
+                                <label class="form-label">Password</label>
+                                <div class="pass-group">
+                                    <input type="password" name="password" class="pass-input" autocomplete="on" onclick="changetype()"  placeholder="Enter your password">
+                                    <span class="fas toggle-password fa-eye-slash"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-12">
+                            <div class="form-group">
+                                <label class="form-label">Profile Pic</label>
+                                <input type="file" name="profile_pic" class="form-control" maxlength="254">
+                            </div>
+                        </div>
+                        <div class="col-lg-12 text-end">
+                            <button type="submit" class="btn btn-primary me-2">Save</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% include 'admin-includes/footer.html' %}
+<script src="https://maps.googleapis.com/maps/api/js?key={{GOOGLE_PLACES_KEY}}&libraries=places&callback=CheckAddress" async defer></script>
+
+<script type="text/javascript">
+    jQuery.validator.addMethod("is_mobile_no_exists", 
+    function(value, element) {
+        let is_valid = true
+        $.ajax({
+            url: "{% url 'accounts:validations' %}",
+            type: "GET",
+            data: { mobile_no: value ,id:"{{user.id}}"},
+            async:false,
+            success: function (data) {
+                if(data.mobile_no == true){
+                    is_valid = false
+                }else{
+                    is_valid =  true
+                }
+              
+            },
+          });        
+        return is_valid
+    },'Mobile No already exists!');
+    jQuery.validator.addMethod("is_email_exists", 
+    function(value, element) {
+        let is_valid = true
+        $.ajax({
+            url: "{% url 'accounts:validations' %}",
+            type: "GET",
+            data: { email: value ,id:"{{user.id}}"},
+            async:false,
+            success: function (data) {
+                if(data.email == true){
+                    is_valid = false
+                }else{
+                    is_valid =  true
+                }
+              
+            },
+          });        
+        return is_valid
+    },'Email already exists!');
+    $("#add-user").validate({
+        rules: {
+            full_name: {
+                required: true,
+                normalizer: function (value) {
+                    return $.trim(value);
+                }
+            },
+            gender: {
+                required: true,
+            },
+            email: {
+                required: true,
+                email: true,
+                is_email_exists: true,
+                normalizer: function (value) {
+                    return $.trim(value);
+                }
+            },
+            mobile_no: {
+                required: true,
+                is_mobile_no_exists: true,
+                minlength: 10,
+                normalizer: function (value) {
+                    return $.trim(value);
+                }
+            },
+            address: {
+                required: true,
+                normalizer: function (value) {
+                    return $.trim(value);
+                }
+            },
+            password: {
+                required: true,
+                minlength: 8,
+                maxlength: 35,
+                normalizer: function (value) {
+                    return $.trim(value);
+                },
+                strongpassword:"^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*]).{8,}$",
+            },
+            profile_pic: {
+                accept: "jpg,png,jpeg,gif"
+            },
+        },
+        messages: {
+            full_name: {
+                required: "Please enter full name",
+            },
+            gender: {
+                required: "Please select gender",
+            },
+            email: {
+                required: "Please enter email",
+            },
+            address: {
+                required: "Please enter address",
+            },
+            mobile_no: {
+                required: "Please enter mobile no",
+                minlength: "At least 10 numbers required!",
+            },
+            password: {
+                required: "Please enter password",
+                minlength: "At least 8 characters required!",
+                maxlength: "At most 35 characters only!",
+                strongpassword:"Password must have one uppercase, lowercase, symbol and number",
+            },
+            profile_pic: {
+                accept: "Please upload file in these format only (jpg, jpeg, png, gif)"
+            },
+        }
+    });    
+    function changetype(){
+        if ($("#password").attr('type') == "password"){
+            document.getElementById("password").type = "text";
+        }
+        else{
+            document.getElementById("password").type = "password";
+        }
+    }
+
+    $("#address").keyup(function () {
+        var autocomplete = new google.maps.places.Autocomplete($("#address")[0], {});
+        google.maps.event.addListener(autocomplete, 'place_changed', function () {
+            var place = autocomplete.getPlace();
+            $('#latitude').val(place.geometry.location.lat())
+            $('#longitude').val(place.geometry.location.lng())
+        });
+    });
+    $('#address').change(function(){
+        $('.edit-details-error').text("");
+    })
+    $('#address').on('keypress', function(e) {
+        return e.which !== 13;
+    });
+    function CheckAddress(formID){
+        if ($('#'+formID).length){
+            if ($('#'+formID).valid()){
+                if ($('#latitude').val() == "" && $('#longitude').val() == ""){
+                    $('.'+formID+'-error').text("Please enter a valid location")
+                    return false;
+                }
+                else{
+                    $('.'+formID+'-error').text("")
+                    Loader(formID);
+                    return true;
+                }
+            }
+        }
+    }
+</script>

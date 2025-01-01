@@ -1,0 +1,85 @@
+<!DOCTYPE html>{% load static %}
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title><ProjectName>  </title>
+    <!-- Favicon icon -->
+    <link rel="shortcut icon" href="{% static 'admin-assets/images/favicon.ico' %}" />
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin >
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+	<style type="text/css">
+		.page_404 {
+			padding: 40px 0;
+			background: #fff;
+			font-family: 'Arvo', serif;
+			height: 100vh;
+			align-items: center;
+			justify-content: center;
+			display: flex;
+		}
+
+		.page_404 img {
+			width: 100%;
+		}
+
+		.link_404 {
+			color: #fff !important;
+			padding: 10px 20px;
+			background-color: #005CEC;
+			margin: 20px 0;
+			display: inline-block;
+			border-radius: 5px;
+			text-decoration: none;
+			max-width: 200px;
+			width: 100%;
+			font-size: 20px;
+			font-family: 'Poppins', sans-serif;
+		}
+
+		.contant_box_404 {
+			text-align: center;
+			max-height: 500px;
+			margin: 0 auto;
+			margin-top: -50px;
+		}
+
+		.contant_box_404 h3 {
+			font-weight: 600;
+			font-size: 40px;
+			margin: 10px 0px;
+			font-family: 'Poppins', sans-serif;
+		}
+
+		.contant_box_404 p {
+			font-family: 16px;
+			font-family: 'Poppins', sans-serif;
+		}
+
+	</style>
+</head>
+<body>
+	<section class="page_404">
+		<div class="container">
+			<div class="row">
+				<div class="col-sm-12 ">
+					<div class="col-sm-10 col-sm-offset-1 text-center">
+						<div class="contant_box_404">
+							<h3 class="h2">
+								Page Not Found
+							</h3>
+							<p>The page you are looking for is not available!</p>
+							{% if request.user.role_id == 1 %}
+							<a href="{% url 'admin:index' %}" class="link_404">Go Back to Home</a>
+							{% else %}
+							<a href="{% url 'frontend:index' %}" class="link_404">Go Back to Home</a>
+							{% endif %}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+</body>
+</html>

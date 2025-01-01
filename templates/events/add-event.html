@@ -1,0 +1,289 @@
+{% include 'admin-includes/header.html' %}
+{% load static %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Events</h4>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a class="white-text" href="/">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'events:event_list' %}" class="white-text">Events</a></li>
+                        <li class="breadcrumb-item active">Add Event</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="page-btn d-flex flex-wrap">
+                <a class="btn btn-secondary" href="{% url 'events:event_list' %}" ><i class="fa fa-angle-left me-1"></i> Back</a>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <form onsubmit="return CheckAddress(this.id)" id="add-event" action="{% url "events:add_event" %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6 col-12">
+                            <div class="form-group required-field">
+                                <label class="form-label">Title</label>
+                                <input type="text" placeholder="Enter Title" name="title" class="form-control" maxlength="254">
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-12">
+                            <div class="form-group">
+                                <label class="form-label">Image</label>
+                                <input type="file" placeholder="Enter Title" name="image" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-12">
+                            <div class="form-group ">
+                                <label class="form-label">Series</label>
+                                <input type="text" placeholder="Enter Series" name="series" class="form-control" maxlength="254">
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-12">
+                            <div class="form-group required-field">
+                                <label class="form-label">Category</label>
+                                <select name="category" id="category" required class="form-control">
+                                    <option value="">Select</option>
+                                    {% for cat in category %}
+                                        <option {% if cat == category.cat %}selected{% endif %} value="{{cat.id}}">{{cat.title}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-12">
+                            <div class="form-group required-field">
+                                <label class="form-label">Checkout Link</label>
+                                <input type="text" placeholder="Enter Checkout Link" name="checkout_link" class="form-control" maxlength="254">
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-12">
+                            <div class="form-group required-field">
+                                <label class="form-label">Ticket Available</label>
+                                <select name="has_available_tickets" id="has_available_tickets" required class="form-control">
+                                    <option value="">Select</option>
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-12">
+                            <div class="form-group required-field">
+                                <label class="form-label">Advertisable</label>
+                                <select name="is_advertisable" id="is_advertisable" required class="form-control">
+                                    <option value="">Select</option>
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-12">
+                            <div class="form-group required-field">
+                                <label class="form-label">Confirmation</label>
+                                <select name="is_confirmed" id="is_confirmed" required class="form-control">
+                                    <option value="">Select</option>
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-12">
+                            <div class="form-group required-field">
+                                <label class="form-label">Start Date</label>
+                                <input type="datetime-local" placeholder="Enter Start Date" name="start_date" id="start_date" class="form-control" maxlength="254">
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-12">
+                            <div class="form-group required-field">
+                                <label class="form-label">End Date</label>
+                                <input type="datetime-local" placeholder="Enter End Date" name="end_date" id="end_date" class="form-control" maxlength="254">
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-12">
+                            <div class="form-group required-field">
+                                <label class="form-label">Stock</label>
+                                <input type="text" onkeypress="return /[0-9]/i.test(event.key)" placeholder="Enter Stock" name="stock" class="form-control" maxlength="10">
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-12">
+                            <div class="form-group ">
+                                <label class="form-label">Venue</label>
+                                <input type="text" placeholder="Enter Venue" name="venue" id="address" class="form-control" maxlength="254">
+                                <input type="hidden" name="latitude" id="latitude" >
+                                <input type="hidden" name="longitude" id="longitude">
+                                <span class="edit-details-error error" ></span>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 text-end">
+                            <button type="submit" class="btn btn-primary me-2">Save</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% include 'admin-includes/footer.html' %}
+
+<script src="https://maps.googleapis.com/maps/api/js?key={{GOOGLE_PLACES_KEY}}&libraries=places&callback=CheckAddress" async defer></script>
+<script>
+    $("#address").keyup(function () {
+        var autocomplete = new google.maps.places.Autocomplete($("#address")[0], {});
+        google.maps.event.addListener(autocomplete, 'place_changed', function () {
+            var place = autocomplete.getPlace();
+            $('#latitude').val(place.geometry.location.lat())
+            $('#longitude').val(place.geometry.location.lng())
+        });
+    });
+    $('#address').change(function(){
+        $('.edit-details-error').text("");
+    })
+    $('#address').on('keypress', function(e) {
+        return e.which !== 13;
+    });
+    function CheckAddress(formID){
+        if ($('#'+formID).length){
+            if ($('#'+formID).valid()){
+                if ($('#latitude').val() == "" && $('#longitude').val() == ""){
+                    $('.'+formID+'-error').text("Please enter a valid location")
+                    return false;
+                }
+                else{
+                    $('.'+formID+'-error').text("")
+                    Loader(formID);
+                    return true;
+                }
+            }
+        }
+    }
+</script>
+
+
+<script type="text/javascript">
+    jQuery.validator.addMethod("validate_end_date", 
+    function(value, element) {
+        let is_valid = true
+        let start_time = $('#start_date').val().trim()
+        let end_time = value.trim()
+
+        if(!start_time || !end_time){
+            is_valid = false
+
+        }else {
+            start_time = new Date(start_time)
+            end_time = new Date(end_time)
+
+            if(end_time <= start_time){
+                is_valid = false
+            } else {
+                is_valid = true
+            }
+
+        }
+        
+        return is_valid
+    },'End date sould be greater than start datetime');
+
+    jQuery.validator.addMethod("current_time_validate", 
+    function(value, element) {
+        let is_valid = true
+        let current_time = new Date()
+        let selected_time = new Date(value.trim())
+
+        if(!current_time || !selected_time){
+            is_valid = false
+        }else if(selected_time < current_time) {
+            is_valid = false
+        }
+        
+        return is_valid
+    },'Selected time must be greater than current datetime ');
+
+
+    
+    $("#add-event").validate({
+        ignore:[],
+        rules: {
+            title: {
+                required: true,
+                normalizer: function (value) {
+                    return $.trim(value);
+                }
+            },
+            image: {
+                accept: "jpg,png,jpeg,gif"
+            },
+            category: {
+                required: true,
+                normalizer: function (value) {
+                    return $.trim(value);
+                }
+            },
+            series: {
+                normalizer: function (value) {
+                    return $.trim(value);
+                }
+            },
+            checkout_link: {
+                required: true,
+                normalizer: function (value) {
+                    return $.trim(value);
+                },
+                url: true,
+            },
+            has_available_tickets: {
+                required: true,
+            },
+            is_advertisable: {
+                required: true,
+            },
+            is_confirmed: {
+                required: true,
+            },
+            start_date: {
+                required: true,
+                current_time_validate:true,
+            },
+            end_date: {
+                required: true,
+                validate_end_date:true,
+            },
+            stock: {
+                required: true,
+                min:1,
+            }
+        },
+        messages: {
+            title: {
+                required: "Please enter title",
+            },
+            image: {
+                accept: "Please upload file in these format only (jpg, jpeg, png, gif)"
+            },
+            category: {
+                required: "Please enter category",
+            },
+            checkout_link: {
+                required: "Please enter checkout link",
+            },
+            has_available_tickets: {
+                required: "Please select type of availability",
+            },
+            is_advertisable: {
+                required: "Please select type of advertisable",
+            },
+            is_confirmed: {
+                required: "Please select type of Confirmation",
+            },
+            start_date: {
+                required: "Please enter start datetime",
+            },
+            end_date: {
+                required: "Please enter end datetime",
+            },
+            stock: {
+                required: "Please enter stock",
+            }
+        },
+    });    
+</script>

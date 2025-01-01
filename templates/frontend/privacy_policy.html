@@ -1,0 +1,30 @@
+{% load static %}
+{% load extras %}
+{% include 'frontend/includes/header.html' %}
+<div id="main-wrapper">
+    <section class="banner_header">
+        <div class="container">
+            <div class="banner_hd_inner">
+                <h1>Privacy Policy</h1>
+            </div>
+        </div>
+    </section>
+    <section id="about-us" class="about-us-wrapper">
+        <div class="download-app-wrapper section-ptb">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="about-wrapper">
+                            {% if data %}
+                            <p class="paragraph-text mt-35">{{data.content|safe}}</p>
+                            {% else %}
+                            <p class="paragraph-text mt-2">No Data Found</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% include 'frontend/includes/footer.html' %}

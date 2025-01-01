@@ -1,0 +1,17 @@
+{% include 'admin-includes/header.html' %}
+{% load static %}
+{% block content %}
+<div class="page-wrapper">
+    <div class="content heightcal row justify-content-center align-items-center">
+        <div class="col-md-10">
+            <div class="card h-100">
+                <div class="card-body h-100 text-center resticted-box">
+                    <img src="{% static 'admin-assets/images/alert.gif' %}" width="240px">
+                    <h2 class="mb-0 text-danger">You Are Not Allowed To Perform This Action!</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% include 'admin-includes/footer.html' %}

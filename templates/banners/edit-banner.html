@@ -1,0 +1,199 @@
+{% include "admin-includes/header.html" %}{% load static %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.1.0/cropper.css" />
+<link rel="stylesheet" href="{% static 'admin-assets/css/customized-css/banner-custom.css' %}" />
+
+
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Banner</h4>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'frontend:index' %}">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a class="white-text" href="{% url 'accounts:banners_list' %}">Banners</a></li>
+                        <li class="breadcrumb-item active">Edit Banner</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="page-btn d-flex flex-wrap">
+                <a class="btn btn-secondary" href="{% url 'accounts:banners_list' %}"><i class="fa fa-angle-left me-1"></i> Back</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <form enctype="multipart/form-data" action={% url 'accounts:update_banner' banner.id %} onsubmit="Loader(this.id)" id="banner-image-form" method="POST" >
+                    {% csrf_token %}
+                    <div class="card-body">
+                        <div class="col-12 mx-auto">
+                            <div class="form-group required-field">
+                                <label class="form-label">Title</label>
+                                <input type="text" placeholder="Enter title" value='{% if banner.title %}{{banner.title}}{% else %}{% endif %}' maxlength="255" name="title" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="col-12 mx-auto">
+                            <div class="form-group required-field">
+                                <label class="form-label">Select Image</label>
+                            </div>
+                        </div>
+                       
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="mb-3">
+                                    <div class="upload-card">
+                                        <div class="input-group">                                              
+                                            <label class="input-group-text upload-file-label d-flex align-items-center justify-content-center" for="banner-image">
+                                                <input class="form-control" type="file" name="image" id="banner-image" accept="image/jpg,image/png,image/jpeg">                                                <div>
+                                                <img src="/static/admin-assets/images/upload.svg">
+                                                    <p class="mt-2">Select Image</p>
+                                                </div>
+                                            </label>
+                                        </div>
+                                        <label id="image-error" class="error" for="image"></label>
+                                    </div>
+                                    <label id="image-error" class="error" for="image"></label>
+                                    <div class="my-3 d-none image_preview_data_preview">
+                                        <div class="my-3" id="image_preview_data"></div>
+                                        <center>
+                                            <div class="preview"></div>
+                                        </center>
+                                    </div>
+                                    <div class="img-thumbs my-2" >
+                                        <img id="cropper_image" style="max-width:100%;max-height:100%" >
+                                    </div>
+
+                                    <div class="col-lg-12">
+                                        <div class="mb-0">
+                                            <div class="hstack gap-2 justify-content-end px-3 pb-3" id="submit-btn-div">
+                                                <button type="submit"  class="btn btn-primary">Save</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include "admin-includes/footer.html" %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.1.0/cropper.js"></script>
+
+<script>
+
+    const cropped_image = new DataTransfer();
+    const empty_file = new DataTransfer();
+
+    var $image = $('#cropper_image');
+    $('#banner-image').change(function(){
+        $('.image_preview_data_preview').removeClass('d-none')
+        // validate file type 
+        let extension = this.files[0]['name'].slice((Math.max(0,this.files[0]['name'].lastIndexOf(".")) || Infinity) + 1); 
+        if(extension == 'jpg'||extension == 'jpeg'||extension == 'png'){
+            // show upload and crop btn 
+            $('#submit-btn-div').html(
+                `<button type="button"  onclick="ShowImagePreview()"  class="btn btn-primary">Crop & Upload Image</button>`
+            )
+            var reader = new FileReader();
+            var cropBoxData;
+            var canvasData;
+            reader.readAsDataURL(this.files[0]);
+            reader.onload = function(e) {
+                $('#cropper_image').attr("src",e.target.result)
+                // set cropper
+                $image.cropper("destroy");
+                $image.cropper({
+                    viewMode: 1,
+                    //aspectRatio: 16 / 9,
+                    minCropBoxWidth:0,
+                    minCropBoxHeight:0 ,
+                    cropBoxResizable: true,
+                    zoomOnWheel:false,
+                    background: false,
+                    preview: '.preview',
+                    ready: function() {
+                        $image.cropper("setCanvasData", canvasData);
+                        $image.cropper("setCropBoxData", cropBoxData);
+                    },
+                    built: function () {
+                    $toCrop.cropper("setCropBoxData", { width: "100%", height: "100%" });
+                    },
+                    crop: function(event) {
+                    let html = `
+                    <div class="form-group">
+                        <h6 class='form-label'>Image Preview </h6>
+                        <label class="form-label"><b>Hight : ${parseInt(event.detail.height)}</b></label>
+                        <label class="form-label"><b>Width : ${parseInt(event.detail.width)}</b></label>
+                    </div>
+                    `
+                    
+                    //$('.preview').removeClass('d-none')
+                    $('#image_preview_data').html(html)
+                  }
+
+                });
+                $('.cropper-container').each(function() {
+                    $(this).css('width', '94%');
+                    $(this).css('margin', '0 auto');
+                });
+
+            }
+        }
+        else {
+                document.getElementById('banner-image').files = empty_file.files;
+                $('#cropper_image').attr("src",'')
+                $image.cropper("destroy");
+                $('#image_preview_data').html('')
+                $('#submit-btn-div').html('')
+                swal({
+                    title: 'Invalid file formate',
+                    text: 'Please upload file in these format only (jpg, jpeg, png)',
+                    icon: "warning",
+                    showConfirmButton:false,
+                })
+            }
+    })
+    
+    // to show crop box height and width 
+    $("#banner-image-form").validate({
+        rules: {
+            title: {
+                required: true,
+                normalizer: function (value) {
+                    return $.trim(value);
+                },
+                maxlength: 30
+            },
+        },
+        messages: {
+            title: {
+                required: "Please enter title",
+            },
+        },
+    });
+    
+    
+    function ShowImagePreview(){
+        cropped_image.clearData();    
+        var cropData = $image.cropper("getData");
+          var cropperrr = $image.data('cropper');
+          cropperrr.getCroppedCanvas().toBlob((blob) => {
+            const reader1 = new FileReader();
+            reader1.addEventListener("load", function () {
+              var filesd = new File([blob], "image.png", {type:"image/png"}); //ERROR
+              cropped_image.items.add(filesd);
+              // for clear first
+              document.getElementById('banner-image').files = empty_file.files;
+              document.getElementById('banner-image').files = cropped_image.files;
+              $('#banner-image-form').submit()
+            }, false);
+            reader1.readAsDataURL(blob);
+          },'image/jpeg')
+    }
+</script>

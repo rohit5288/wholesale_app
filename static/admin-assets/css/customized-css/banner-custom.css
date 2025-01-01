@@ -1,0 +1,68 @@
+
+.upload-card .input-group {
+    width: 100%;
+    height: 184px;
+    border: 2px dashed #124155;
+    border-radius: 6px;
+    position: relative;
+    min-width: 100%;
+    min-height: 184px;
+    cursor: pointer;
+}
+
+.upload-card .form-control {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    width: 100%;
+    opacity: 0;
+}
+
+.upload-card .input-group-text {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+    display: block;
+    padding: 15px;
+}
+
+.upload-card p {
+    font-family: "DM Sans", sans-serif;
+    font-size: 13px;
+    line-height: 19px;
+    font-weight: 500;
+    text-align: start;
+}
+
+.upload-card .input-group img {
+    width: 40px;
+}
+
+.input-group img {
+    width: 40px;
+}
+
+.upload-file-label {
+    cursor: pointer;
+}
+
+.upload-list {
+    display: flex;
+    gap: 10px;
+    flex-flow: wrap;
+}
+
+.preview {
+    overflow: hidden;
+    width: 500px; 
+    height: 500px;
+  }

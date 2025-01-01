@@ -1,0 +1,161 @@
+{% include 'admin-includes/header.html' %}
+{% load static %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Pages</h4>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a class="white-text" href="/">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'credentials:smtp_list' %}"
+                                class="white-text">Pages</a></li>
+                        <li class="breadcrumb-item active">Add Page</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="page-btn d-flex flex-wrap">
+                <a class="btn btn-secondary" href="{% url 'credentials:smtp_list' %}"><i
+                        class="fa fa-angle-left me-1"></i> Back</a>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <form onsubmit="Loader(this.id)" id="add-page" action="{% url 'credentials:add_smtp' %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+
+                        <div class="col-lg-6 col-md-6 col-12">
+                            <div class="form-group required-field">
+                                <label class="form-label">Email Backend</label>
+                                <input type="text" placeholder="Enter Email Backend" name="email_backend" readonly class="form-control"
+                                    value="django.core.mail.backends.smtp.EmailBackend">
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 col-md-6 col-12">
+                            <div class="form-group required-field">
+                                <label class="form-label">Email Host</label>
+                                <input type="text" placeholder="Enter Email Host" name="email_host" class="form-control"
+                                    maxlength="150" value={{email_host}}>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-6 col-md-6 col-12">
+                            <div class="form-group required-field">
+                                <label class="form-label">Email Port</label>
+                                <input type="text" placeholder="Enter Email Port" name="email_port" class="form-control"
+                                    maxlength="3" value={{email_port}}>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 col-md-6 col-12">
+                            <div class="form-group required-field">
+                                <label class="form-label">Use TLS</label>
+                                <select name="tls" id="tls" required class="form-control">
+                                    {% if use_tls == '1' %}
+                                        <option value="">Select</option>
+                                        <option value="1" selected >True</option>
+                                        <option value="2">False</option>
+                                    {% elif use_tls == '2' %}
+                                        <option value="">Select</option>
+                                        <option value="1"  >True</option>
+                                        <option value="2" selected>False</option>
+                                    {% else %}
+                                    <option value="">Select</option>
+                                    <option value="1">True</option>
+                                    <option value="2">False</option>
+                                    {% endif %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 col-md-6 col-12">
+                            <div class="form-group required-field">
+                                <label class="form-label">Host Email</label>
+                                <input type="text" placeholder="Enter Host Email" name="email_host_user" class="form-control"
+                                    maxlength="100" value="{{email_host_user}}">
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 col-md-6 col-12">
+                            <div class="form-group required-field">
+                                <label class="form-label">Email Host Password</label>
+                                <input type="text" placeholder="Enter Email Host Password" id="email_host_password" name="email_host_password" class="form-control"
+                                    maxlength="50" value="{{email_host_password}}">
+
+                                    <span type="checkbox" data-attr="email_host_password" class="eyeicon">
+                                        <i class="eye fas fa-eye-slash"></i>
+                                    </span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-12 text-end">
+                            <button type="submit" class="btn btn-primary me-2">Save</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% include 'admin-includes/footer.html' %}
+<script src="https://cdn.ckeditor.com/4.17.2/standard/ckeditor.js"></script>
+
+<script type="text/javascript">
+
+    $("#add-page").validate({
+        ignore: [],
+        rules: {
+            email_host: {
+                required: true,
+                },
+            email_port: {
+                required: true,
+                },
+            tls: {
+                required: true,
+                },
+            email_host_user: {
+                required: true,
+                email:true,
+                },
+            email_host_password: {
+                required: true,
+                }
+            },
+        
+        messages: {
+            email_host: {
+                required: "Please enter email host",
+                },
+            email_port: {
+                required: "Please enter email port",
+                },
+            tls: {
+                required: "Please select tls",
+                },
+            email_host_user: {
+                required: "Please enter host email",
+                },
+            email_host_password: {
+                required: "Please enter email host password",
+                }
+        },
+    });   
+    
+    $(document).on('click', '.eyeicon', function () {
+        var x = document.getElementById($(this).attr("data-attr"));
+        if (x.getAttribute('type') == "password") {
+            $(this).find(".eye").removeClass("fas fa-eye-slash");
+            $(this).find(".eye").addClass("fas fa-eye");
+            x.removeAttribute("type");
+            x.setAttribute("type", "text");
+        } else {
+            x.removeAttribute("type");
+            x.setAttribute('type', 'password');
+            $(this).find(".eye").removeClass("fas fa-eye");
+            $(this).find(".eye").addClass("fas fa-eye-slash");
+        }
+    })
+</script>

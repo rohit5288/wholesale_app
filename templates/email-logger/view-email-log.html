@@ -1,0 +1,76 @@
+{% include "admin-includes/header.html" %}{% load static %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Email Log Information</h4>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a class="white-text" href="/">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a class="white-text" href="{% url 'logger:email_logs_list' %}">Email Logs</a>
+                        </li>
+                        <li class="breadcrumb-item active">View Email Log</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="page-btn d-flex flex-wrap">
+                <a class="btn btn-secondary" href="{% url 'logger:email_logs_list' %}" ><i class="fa fa-angle-left me-1"></i> Back</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 col-lg-6 col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="productdetails">
+                            <ul class="product-bar">
+                                <li>
+                                    <h4>Id </h4>
+                                    <h6>{% if email_log.id %}{{email_log.id}}{% else %}-{% endif %}</h6>
+                                </li>
+                                <li>
+                                    <h4>Email Subject</h4>
+                                    <h6><b>{% if email_log.email_subject %}{{email_log.email_subject}}{% else %}--{% endif %}</b></h6>
+                                </li>
+                                <li>
+                                    <h4>Reciever Email </h4>
+                                    <h6><b>{% if email_log.recievers_email %}{{email_log.recievers_email}}{% else %}-{% endif %}</b></h6>
+                                </li>
+                                <li>
+                                    <h4>Sender Email </h4>
+                                    <h6>{% if email_log.sender_email %}{{email_log.sender_email}}{% else %}-{% endif %}</h6>
+                                </li>
+                                <li>
+                                    <h4>Email Status </h4>
+                                    <h6>
+                                        {% if email_log.sent_status %}
+                                        <div class="badge bg-success">SUCCESS</div>
+                                        {% else %}
+                                        <div class="badge bg-danger">FAILURE</div>
+                                        {% endif %}
+                                    </h6>
+                                </li>
+                                <li>
+                                    <h4>Created On </h4>
+                                    <h6>
+                                        <script>
+                                            var date = ConvertDateTime("{{ email_log.created_on|date:'Y-m-d' }}", "{{ email_log.created_on|time:'H:i' }}");
+                                            document.write(date);
+                                        </script>
+                                    </h6>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-6 col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        {{email_log.email_template|safe}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% include "admin-includes/footer.html" %}

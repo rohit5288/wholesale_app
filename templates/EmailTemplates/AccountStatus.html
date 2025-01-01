@@ -1,0 +1,120 @@
+
+<!doctype html>{% load static %}
+<html lang="en-US">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+    <meta name="description" content="Registration confirmation">
+</head>
+<body marginheight="0" topmargin="0" marginwidth="0" style="margin: 0px;" leftmargin="0">
+    <!-- 100% body table -->
+    <table cellspacing="0" border="0" cellpadding="0" width="100%" bgcolor="#fff"
+        style="@import url(https://fonts.googleapis.com/css?family=Rubik:300,400,500,700|Open+Sans:300,400,600,700); font-family: 'Open Sans', sans-serif;">
+        <tr>
+            <td>
+                <center>
+                    <table style="background-color: #fff; max-width:670px; margin:50px auto;" width="100%" border="0"
+                        align="center" cellpadding="0" cellspacing="0">
+                      
+                        <tr>
+                            <td>
+                                <center>
+                                    <table width="95%" border="0" align="center" cellpadding="0" cellspacing="0"
+                                        style="max-width:670px;border-radius:3px; text-align:center;-webkit-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);-moz-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);box-shadow:0 6px 18px 0 rgba(0,0,0,.06);">
+                                        <tr>
+                                            <td style="text-align:center;padding: 20px;background: #000;">
+                                                 <a>
+                                                    <img width="100" src="{{ protocol }}://{{ domain }}/static/admin-assets/images/logo.png" title="logo" alt="logo"> 
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="height:10px;">&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <img src="{{ protocol }}://{{ domain }}/static/admin-assets/images/account-status-img.png" title="logo" alt="logo" style="width: 300px;"> 
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="height:40px;">&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding:0 35px ;">
+                                                <h1 style="color: #31a8f6;font-weight: 500;margin: 0;font-size: 22px;font-family: 'Rubik',sans-serif;">
+                                                    {{title}}
+                                                </h1>
+                                                <span style="display: inline-block;vertical-align: middle;margin: 0px 0 20px; width: 240px;height: 5px;"></span>
+                                                <p style="font-size:15px; color:#455056; margin:8px 0 0; line-height:24px;">
+                                                    Hello {{user.full_name}},
+                                                <p style="font-size:15px; color:#455056; margin:8px 0 0; line-height:24px;">{{description}}</p>
+                                                {% if password %}
+                                                <a style="background:#31a8f6;text-decoration:none !important; display:inline-block; font-weight:600; margin-top:24px; color:#fff;font-size:14px;padding:10px 24px;display:inline-block;border-radius:50px;">
+                                                    {{password}}
+                                                </a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% if title == 'Account Activated' %}
+                                        <tr>
+                                            <td style="height:20px;">&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding:0 15px; margin-top:10px;">
+                                                <table style="margin: 0px auto;
+                                                border: 1px solid #cbcbcb;
+                                                border-collapse: collapse;
+                                                text-align: left;
+                                                vertical-align: top;
+                                                height: auto!important;
+                                                width: 80%;
+                                                background-position: 0px 0px;">
+                                                {% if user.username %}
+                                                    <tr>
+                                                        <th style="font-weight:600;font-size: 14px; padding: 20px; color: #455056;border: 1px solid #cbcbcb;">Username</th>
+                                                        <td style="font-weight:500;font-size: 14px; padding: 20px; color: #243551;border: 1px solid #cbcbcb;">{{user.username}}</td>
+                                                    </tr>
+                                                {% endif %}
+                                                {% if user.full_name %}
+                                                    <tr>
+                                                        <th style="font-weight:600;font-size: 14px; padding: 20px; color: #455056;border: 1px solid #cbcbcb;">Full Name</th>
+                                                        <td style="font-weight:500;font-size: 14px; padding: 20px; color: #243551;border: 1px solid #cbcbcb;">{{user.full_name}}</td>
+                                                    </tr>
+                                                {% endif %}
+                                                {% if user.email %}
+                                                    <tr>
+                                                        <th style="font-weight:600;font-size: 14px; padding: 20px; color: #455056;border: 1px solid #cbcbcb;">Email</th>
+                                                        <td style="font-weight:500;font-size: 14px; padding: 20px; color: #243551;border: 1px solid #cbcbcb;">{{user.email}}</td>
+                                                    </tr>
+                                                {% endif %}
+                                                {% if user.mobile_no %}
+                                                    <tr>
+                                                        <th style="font-weight:600;font-size: 14px; padding: 20px; color: #455056;border: 1px solid #cbcbcb;">Phone Number</th>
+                                                        <td style="font-weight:500;font-size: 14px; padding: 20px; color: #243551;">{% if user.country_code %}{{user.country_code}}{% endif %}{{user.mobile_no}}</td>
+                                                    </tr>
+                                                {% endif %}
+                                                </table> 
+                                            </td>
+                                        </tr>
+                                        {% endif %}
+                                        <tr>
+                                            <td style="height:40px;">&nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align:center;padding: 20px 0;border-top: 2px solid #cbcbcb4a; background-color: #000;">
+                                                <p style="font-size:14px; color:#fff; line-height:18px; margin:0 0 0;">
+                                                    Copyright  &copy; <span id="full_year">2024</span><a href="{% url 'frontend:index' %}"> Base </a>
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </center>
+                            </td>
+                        </tr>
+                        
+                    </table>
+                </center>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

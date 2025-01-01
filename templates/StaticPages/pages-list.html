@@ -1,0 +1,145 @@
+{% include 'admin-includes/header.html' %}
+{% load static %}{% load extras %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Pages Management</h4>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a class="white-text" href="/">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a class="white-text" href="{% url 'static_pages:pages_list' %}">Pages</a>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="page-btn d-flex flex-wrap">
+                <a class="btn btn-primary" href="{% url 'static_pages:add_page' %}"><i class="fas fa-plus ms-1"></i> Page</a>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="dataview">
+                    <form onsubmit="Loader()" action="{% url 'static_pages:pages_list' %}" method="GET">
+                        <div class="table-responsive ">
+                            <table class="table datatable">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>State</th>
+                                        <th>Type</th>
+                                        <th>Created on</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <thead>
+                                    <tr class="search-row">
+                                        <td><input type="text" value="{{title}}" class="form-control" name="title" maxlength="20"></td>
+                                        <td>
+                                            <select class="form-control" name="state" onchange="this.form.submit()">
+                                                <option  value=""></option>
+                                                <option {% if state == '0' %} selected {% endif %} value="0">Inactive</option>
+                                                <option {% if state == '1' %} selected {% endif %} value="1">Active</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select class="form-control" name="type_id" onchange="this.form.submit()">
+                                                <option  value=""></option>
+                                                <option {% if type_id == '1' %} selected {% endif %} value="1">Terms & Conditions</option>
+                                                <option {% if type_id == '2' %} selected {% endif %} value="2">Privacy Policy</option>
+                                                <option {% if type_id == '3' %} selected {% endif %} value="3">About Us</option>
+                                                <option {% if type_id == '4' %} selected {% endif %} value="4">How it Works</option>
+                                                <option {% if type_id == '5' %} selected {% endif %} value="5">Cookie Policy</option>
+                                            </select>
+                                        </td>
+                                        <td><input type="date" onkeydown="return false" value="{{created_on}}" class="position-relative form-control" onchange="this.form.submit()" name="created_on"></td>
+                                        <td><button type="submit" class="btn btn-primary">Search</button></td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if pages %}
+                                    {% for page in pages %}
+                                    <tr>
+                                        <td class='clickable-row' data-href="{% url 'static_pages:view_page' page.id %}">{{page.title| truncatechars:50}}</td>
+                                        <td>
+                                            {% if page.is_active %}
+                                                <span href="{% url 'static_pages:change_page_status' page.id %}" message="Are you sure you want to deactivate this page?" action='DeActivate' class="badge bg-success active_deactive">ACTIVE</span>
+                                            {% else %}
+                                                <span href="{% url 'static_pages:change_page_status' page.id %}" message="Are you sure you want to activate this page?" action='Activate' class="badge bg-warning active_deactive">INACTIVE</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class='clickable-row' data-href="{% url 'static_pages:view_page' page.id %}">
+                                        {% if page.type_id == 1 %}
+                                            <span class="badge bg-success">Terms & Conditions</span>
+                                        {% elif page.type_id == 2 %}
+                                            <span class="badge bg-warning">Privacy Policy</span>
+                                        {% elif page.type_id == 3 %}
+                                            <span class="badge bg-primary">About Us</span>
+                                        {% elif page.type_id == 4 %}
+                                            <span class="badge bg-secondary">How it Works</span>
+                                        {% elif page.type_id == 5 %}
+                                            <span class="badge bg-info">Cookie Policy</span>
+                                        {% endif %}
+                                        </td>
+                                       
+                                        <td class='clickable-row' data-href="{% url 'static_pages:view_page' page.id %}">
+                                            <script>
+                                                var d = ConvertDateTime("{{ page.created_on|date:'Y-m-d' }}", "{{ page.created_on|time:'H:i' }}");
+                                                document.write(d);
+                                            </script>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <a title="View"  href="{% url 'static_pages:view_page' page.id %}" class="btn btn-success shadow btn-xs sharp me-1"><i class="fa fa-eye"></i></a>
+                                                <a title="Edit" href="{% url 'static_pages:edit_page' page.id %}" class="btn btn-info shadow btn-xs sharp me-1"><i class="fa fa-edit"></i></a>
+                                                <a title="Delete" style="margin-right:5px" href="{% url 'static_pages:delete_page' page.id %}" message="Are you sure you want to delete this page?" class="btn btn-danger shadow btn-xs sharp action_confirm" ><i class="fa fa-trash"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </form>
+                    {% if pages.has_other_pages %}
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                            {% if pages.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?{% url_replace request 'page' pages.previous_page_number %}">&laquo;</a>                                          
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">&laquo;</span>
+                                </li>
+                            {% endif %}
+                            {% for i in pages.paginator.page_range %}
+                                {% if pages.number == i %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ i }} <span class="sr-only">(current)</span></span>
+                                    </li>
+                                {% elif i > pages.number|add:'-5' and i < pages.number|add:'5' %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?{% url_replace request 'page' i %}">{{ i }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            {% if pages.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?{% url_replace request 'page' pages.next_page_number %}">&raquo;</a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">&raquo;</span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% include 'admin-includes/footer.html' %}

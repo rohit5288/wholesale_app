@@ -1,0 +1,132 @@
+{% include "admin-includes/header.html" %}
+{% load static %}
+{% load extras %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Update Profile</h4>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a class="white-text" href="/">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'users:view_user' user.id %}" class="white-text">Admin</a></li>
+                        <li class="breadcrumb-item active">Update Profile</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="page-btn d-flex flex-wrap">
+                <a class="btn btn-secondary" href="{% url 'users:view_user' request.user.id %}" ><i class="fa fa-angle-left me-1"></i> Back</a>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <form id="edit-profile" onsubmit="Loader(this.id)" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <div class="form-group required-field">
+                                <label class="form-label">Username</label>
+                                <input type="text" value="{{ user.username }}" maxlength="50" name="username" id="username" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <div class="form-group required-field">
+                                <label class="form-label">Email</label>
+                                <input type="text" value="{{ user.email }}" maxlength="50" name="email" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <div class="form-group">
+                                <label class="form-label">Profile Picture</label>
+                                <input type="file" placeholder="Upload Profile Pic" name="profile_pic" id="profile_pic" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-lg-12 text-end">
+                            <button type="submit" class="btn btn-primary me-2">Save</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% include "admin-includes/footer.html" %}
+<script type="text/javascript">
+    $('input').keypress(function( e ) {    
+        if(!/[0-9a-zA-Z-]/.test(String.fromCharCode(e.which)))
+            return false;
+    });
+
+    jQuery.validator.addMethod("is_email_exists", 
+    function(value, element) {
+        let is_valid = true
+        $.ajax({
+            url: "{% url 'accounts:validations' %}",
+            type: "GET",
+            data: { email: value ,id:"{{user.id}}"},
+            async:false,
+            success: function (data) {
+                if(data.email == true){
+                    is_valid = false
+                }else{
+                    is_valid =  true
+                }
+              
+            },
+          });        
+        return is_valid
+    },'Email already exists!');
+
+    jQuery.validator.addMethod("is_username_exists", 
+    function(value, element) {
+        let is_valid = true
+        $.ajax({
+            url: "{% url 'accounts:validations' %}",
+            type: "GET",
+            data: { username: value ,id:"{{user.id}}"},
+            async:false,
+            success: function (data) {
+                if(data.username == true){
+                    is_valid = false
+                }else{
+                    is_valid =  true
+                }
+            },
+          });        
+        return is_valid
+    },'Username already exists!');
+    
+    $("#edit-profile").validate({
+        rules: {
+            email: {
+                required: true,
+                normalizer: function( value ) {
+                    return $.trim( value );
+                },
+                email: true,
+                is_email_exists: true
+            },
+            username: {
+                required: true,
+                normalizer: function( value ) {
+                    return $.trim( value );
+                },
+                is_username_exists: true
+            },
+            profile_pic: {
+                accept: "jpg,png,jpeg,gif"
+            }
+        },
+        messages: {
+            username: {
+                required: "Please enter username",
+            },
+            email: {
+                required: "Please enter email",
+            },
+            profile_pic: {
+                accept: "Please upload file in these format only (jpg, jpeg, png, gif)"
+            }
+        }
+    });
+</script>

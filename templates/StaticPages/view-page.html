@@ -1,0 +1,97 @@
+{% include "admin-includes/header.html" %}{% load static %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Page Information</h4>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a class="white-text" href="/">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'static_pages:pages_list' %}" class="white-text">Pages</a></li>
+                        <li class="breadcrumb-item active">View Page</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="page-btn d-flex flex-wrap">
+                <a href="{% url 'static_pages:edit_page' page.id %}" class="btn btn-info shadow btn-xs sharp me-1"><i class="fa fa-edit"></i></a>
+                <a style="margin-right:5px" href="{% url 'static_pages:delete_page' page.id %}" message="Are you sure you want to delete this page?" class="btn btn-danger shadow btn-xs sharp action_confirm" ><i class="fa fa-trash"></i></a>
+                <a class="btn btn-secondary" href="{% url 'static_pages:pages_list' %}"><i class="fa fa-angle-left me-1"></i> Back</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 col-lg-12 col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="productdetails">
+                            <ul class="product-bar">
+
+                                <li>
+                                    <h4>Title </h4>
+                                    <h6><b>{% if page.title %}{{page.title}}{% else %}-{% endif %}</b></h6>
+                                </li>
+                                <li>
+                                    <h4>Status </h4>
+                                    <h6>
+                                        {% if page.is_active %}
+                                                <span style='cursor:pointer' href="{% url 'static_pages:change_page_status' page.id %}" message="Are you sure you want to deactivate this page?" action='DeActivate' class="badge bg-success active_deactive">ACTIVE</span>
+                                            {% else %}
+                                                <span style='cursor:pointer' href="{% url 'static_pages:change_page_status' page.id %}" message="Are you sure you want to activate this page?" action='Activate' class="badge bg-warning active_deactive">INACTIVE</span>
+                                            {% endif %}
+                                    </h6>
+                                </li>
+                                <li>
+                                    <h4>Type </h4>
+                                    <h6>
+                                        {% if page.type_id == 1 %}
+                                            <span class="badge bg-success">Terms & Conditions</span>
+                                        {% elif page.type_id == 2 %}
+                                            <span class="badge bg-warning">Privacy Policy</span>
+                                        {% elif page.type_id == 3 %}
+                                            <span class="badge bg-primary">About Us</span>
+                                        {% elif page.type_id == 4 %}
+                                            <span class="badge bg-secondary">How it Works</span>
+                                        {% elif page.type_id == 5 %}
+                                            <span class="badge bg-info">Cookie Policy</span>
+                                        {% endif %}
+                                    </h6>
+                                </li>
+                                <li>
+                                    <h4>Created On </h4>
+                                    <h6>
+                                        <script>
+                                            var date = ConvertDateTime("{{ page.created_on|date:'Y-m-d' }}", "{{ page.created_on|time:'H:i' }}");
+                                            document.write(date);
+                                        </script>
+                                    </h6>
+                                </li>
+                                <li>
+                                    <h4>Updated On </h4>
+                                    <h6>
+                                        <script>
+                                            var date = ConvertDateTime("{{ page.updated_on|date:'Y-m-d' }}", "{{ page.updated_on|time:'H:i' }}");
+                                            document.write(date);
+                                        </script>
+                                    </h6>
+                                </li>
+                                <li>
+                                    <h4>Description</h4>
+                                    <h6>
+                                        <span id="static-content">{% if page.content %}{{page.content|safe}}{% else %}-{% endif %}</span>
+                                    </h6>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="btn-list border-0 d-flex justify-content-end align-items-center mt-4">
+                {% if page.is_active %}
+                <a href="{% url 'static_pages:change_page_status' page.id %}" action="DeActivate" message="Are you sure you want to deactivate this Page?" class="btn btn-danger active_deactive">DEACTIVATE</a>
+                {% else %}
+                <a href="{% url 'static_pages:change_page_status' page.id %}" action="Activate" message="Are you sure you want to activate this Page?" class="btn btn-success active_deactive">ACTIVATE</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% include "admin-includes/footer.html" %}

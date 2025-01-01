@@ -1,0 +1,61 @@
+{% include "admin-includes/header.html" %}
+{% load static %}
+{% load extras %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Active Cronjobs</h4>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a class="white-text" href="/">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a class="white-text" href="{% url 'accounts:list_cronjob' %}">Cronjobs</a>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="page-btn d-flex flex-wrap">
+                <a class="btn btn-danger me-2" onclick="Loader()" href="{% url 'accounts:remove_cronjob' %}" >Remove Cronjob</a>
+                <a class="btn btn-primary me-2" onclick="Loader()" href="{% url 'accounts:add_cronjob' %}" >Add Cronjob</a>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="dataview">
+                    <form onsubmit="Loader()" action="" method="GET">
+                        <div class="table-responsive">
+                            <table class="table datatable">
+                                <thead>
+                                    <tr>
+                                        <th><strong>Name</strong></th>
+                                        <th><strong>Execution Time</strong></th>
+                                        <th><strong>Cron Expression</strong></th>
+                                        <th><strong>Cron ID</strong></th>
+                                        <th><strong>Action</strong></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if crontab %}
+                                    {% for id,name,days,exp in crontab %}
+                                    <tr>
+                                        <td>{{name}}</td>
+                                        <td>{{days}}</td>
+                                        <td>{{exp}}</td>
+                                        <td>{{id}}</td>
+                                        <td><a title='Run Cronjob' class="btn btn-success me-2" onclick="Loader()" href="{% url 'accounts:run_cronjob' id %}" >Run Now</a>
+                                        </td>
+                                    {% endfor %}
+                                    </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </form>                                            
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% include "admin-includes/footer.html" %}
