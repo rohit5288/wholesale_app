@@ -38,12 +38,6 @@ urlpatterns = [
     # re_path(r'^verify-mobile-number-api/$',VerifyMobileNumberView.as_view(),name="verify_mobile_number_api"),
     # re_path(r'^update-email-api/$',UpdatEmailAddressView.as_view(),name="update_email_api"),
 
-    ##Follow/Unfollow
-    re_path(r'^follow-unfollow/$',FollowUnfollowAPI.as_view(),name="follow_unfollow_api"),
-    re_path(r'^followers-list-api/$',FollowersAPI.as_view(),name="followers_list_api"),
-    re_path(r'^following-list-api/$',FollowingAPI.as_view(),name="following_list_api"),
-
-
     ## Static Pages
     re_path(r'^static-pages-api/$',StaticPages.as_view(),name="static_pages_api"),
 

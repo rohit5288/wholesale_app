@@ -16,7 +16,7 @@ class UserChatsList(APIView):
 
     @swagger_auto_schema(
         tags=["Chat API's"],
-        operation_id="User Chats List",
+        operation_id="user_chats_list",
         operation_description="User Chats List",
         manual_parameters=[
             openapi.Parameter('page', openapi.IN_QUERY, type=openapi.TYPE_STRING),
@@ -38,7 +38,7 @@ class SendMessage(APIView):
 
     @swagger_auto_schema(
         tags=["Chat API's"],
-        operation_id="Send Message",
+        operation_id="send_message",
         operation_description="Send Message",
         manual_parameters=[
             openapi.Parameter('message', openapi.IN_FORM, type=openapi.TYPE_STRING),
@@ -82,7 +82,7 @@ class MessageWindowAPI(APIView):
 
     @swagger_auto_schema(
         tags=["Chat API's"],
-        operation_id="Message Window",
+        operation_id="message_window",
         operation_description="Message Window",
         manual_parameters=[
             openapi.Parameter('receiver_id', openapi.IN_FORM, type=openapi.TYPE_STRING),
@@ -121,7 +121,7 @@ class LoadMessageAPI(APIView):
 
     @swagger_auto_schema(
         tags=["Chat API's"],
-        operation_id="Load Messages",
+        operation_id="load_messages",
         operation_description="Load Messages",
         manual_parameters=[
             openapi.Parameter('receiver_id', openapi.IN_FORM, type=openapi.TYPE_STRING),

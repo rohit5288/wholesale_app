@@ -21,7 +21,7 @@ class UserSignupView(APIView):
 
     @swagger_auto_schema(
         tags=["Authentication API's"],
-        operation_id="User Signup",
+        operation_id="user_signup",
         operation_description="User Signup",
         manual_parameters=[
             openapi.Parameter('first_name', openapi.IN_FORM, type=openapi.TYPE_STRING ,description='First Name'),
@@ -40,9 +40,9 @@ class UserSignupView(APIView):
 
             openapi.Parameter('password', openapi.IN_FORM, type=openapi.TYPE_STRING,description='Password'),
             openapi.Parameter('confirm_password', openapi.IN_FORM, type=openapi.TYPE_STRING,description='Confirm Password'),
-            openapi.Parameter('device_type', openapi.IN_FORM, type=openapi.TYPE_NUMBER , description='1 for Android and 2 for IOS'),
-            openapi.Parameter('device_name', openapi.IN_FORM, type=openapi.TYPE_STRING),
-            openapi.Parameter('device_token', openapi.IN_FORM, type=openapi.TYPE_STRING),
+            # openapi.Parameter('device_type', openapi.IN_FORM, type=openapi.TYPE_NUMBER , description='1 for Android and 2 for IOS'),
+            # openapi.Parameter('device_name', openapi.IN_FORM, type=openapi.TYPE_STRING),
+            # openapi.Parameter('device_token', openapi.IN_FORM, type=openapi.TYPE_STRING),
         ]
     )
     
@@ -100,24 +100,6 @@ class UserSignupView(APIView):
         #     user.longitude= request.data.get('longitude') if request.data.get('longitude') else None
         user.save()
         BulkSendUserEmail(request,user,'EmailTemplates/registration-success.html','Welcome To Base',request.POST.get("email"),"","","","")
-        # try:
-        #     stripe_customer = stripe.Buyer.create(
-        #                 description = "Base User - %s " % user.email,
-        #                 email = user.email,
-        #                 name = user.email,
-        #             )
-        #     user.customer_id = stripe_customer.id
-        #     user.save()
-        # except:
-        #     pass
-        # try:
-        #     device = Device.objects.get(user = user)
-        # except Device.DoesNotExist:
-        #     device = Device.objects.create(user = user)
-        # device.device_type = request.data['device_type']
-        # device.device_name = request.data['device_name']
-        # device.device_token = request.data['device_token']
-        # device.save()
         try:
             token=Token.objects.get(user = user)
         except:
@@ -134,7 +116,6 @@ class UserSignupView(APIView):
                 message=f"An OTP {user.temp_otp} has been sent on your email to verify your account."
         except Exception as e:
             db_logger.exception(e)
-
         data = UserSerializer(user,context = {"request":request}).data
         return Response({"message":f"User registered successfully! {message}","data":data,"status":status.HTTP_200_OK},status=status.HTTP_200_OK)
 
@@ -148,7 +129,7 @@ class VerifyOTP(APIView):
 
     @swagger_auto_schema(
         tags=["Authentication API's"],
-        operation_id="Verify OTP",
+        operation_id="verify_otp",
         operation_description="Verify OTP",
         manual_parameters=[
             openapi.Parameter('email', openapi.IN_FORM, type=openapi.TYPE_STRING),
@@ -192,7 +173,7 @@ class ResendOTP(APIView):
 
     @swagger_auto_schema(
         tags=["Authentication API's"],
-        operation_id="Resend OTP",
+        operation_id="resend_otp",
         operation_description="Resend OTP",
         manual_parameters=[
             openapi.Parameter('email', openapi.IN_FORM, type=openapi.TYPE_STRING),
@@ -245,7 +226,7 @@ class CheckUserEmail(APIView):
 
     @swagger_auto_schema(
         tags=["Authentication API's"],
-        operation_id="Check User Email",
+        operation_id="check_user_email",
         operation_description="Check User Email",
         manual_parameters=[
             openapi.Parameter('email', openapi.IN_FORM, type=openapi.TYPE_STRING ,description='Email Address')
@@ -270,7 +251,7 @@ class UserLoginView(APIView):
 
     @swagger_auto_schema(
         tags=["Authentication API's"],
-        operation_id="User Login",
+        operation_id="user_login",
         operation_description="User Login",
         manual_parameters=[
             openapi.Parameter('role_id', openapi.IN_FORM, type=openapi.TYPE_NUMBER,description='2 for Buyer and 3 for Seller'),
@@ -278,9 +259,9 @@ class UserLoginView(APIView):
             openapi.Parameter('mobile_no', openapi.IN_FORM, type=openapi.TYPE_STRING,description='Mobile Number'),
             openapi.Parameter('country_code', openapi.IN_FORM, type=openapi.TYPE_STRING,description='Country Code'),
             openapi.Parameter('password', openapi.IN_FORM, type=openapi.TYPE_STRING,description='Password'),
-            openapi.Parameter('device_type', openapi.IN_FORM, type=openapi.TYPE_NUMBER, description=('1 for Android and 2 for IOS')),
-            openapi.Parameter('device_name', openapi.IN_FORM, type=openapi.TYPE_STRING),
-            openapi.Parameter('device_token', openapi.IN_FORM, type=openapi.TYPE_STRING),
+            # openapi.Parameter('device_type', openapi.IN_FORM, type=openapi.TYPE_NUMBER, description=('1 for Android and 2 for IOS')),
+            # openapi.Parameter('device_name', openapi.IN_FORM, type=openapi.TYPE_STRING),
+            # openapi.Parameter('device_token', openapi.IN_FORM, type=openapi.TYPE_STRING),
         ]
     )
 
@@ -352,17 +333,6 @@ class UserLoginView(APIView):
             # device.device_token = request.data['device_token']
             # device.save()
             Token.objects.filter(user=user).delete()
-            # if not user.customer_id:
-            #     try:
-            #         stripe_customer = stripe.Buyer.create(
-            #                     description = "Base User - %s " % user.email,
-            #                     email = user.email,
-            #                     name = user.email,
-            #                 )
-            #         user.customer_id = stripe_customer.id
-            #         user.save()
-            #     except:
-            #         pass
             user.role_id=int(request.data.get('role_id'))
             user.save()
             user.refresh_from_db()
@@ -381,7 +351,7 @@ class UserCheckView(APIView):
 
     @swagger_auto_schema(
         tags=["Authentication API's"],
-        operation_id="User Check",
+        operation_id="user_check",
         operation_description="User Check",
         manual_parameters=[]
     )
@@ -404,7 +374,7 @@ class LogoutView(APIView):
 
     @swagger_auto_schema(
         tags=["Authentication API's"],
-        operation_id="Logout",
+        operation_id="logout",
         operation_description="Logout",
         manual_parameters=[]
     )
@@ -425,7 +395,7 @@ class ForgotPassword(APIView):
 
     @swagger_auto_schema(
         tags=["Authentication API's"],
-        operation_id="Forgot Password",
+        operation_id="forgot_password",
         operation_description="Forgot Password",
         manual_parameters=[
             openapi.Parameter('email', openapi.IN_FORM, type=openapi.TYPE_STRING),
@@ -463,7 +433,7 @@ class ForgotPassword(APIView):
 
 #     @swagger_auto_schema(
 #         tags=["Authentication API's"],
-#         operation_id="Forgot Password",
+#         operation_id="forgot_password",
 #         operation_description="Forgot Password",
 #         manual_parameters=[
 #             openapi.Parameter('email', openapi.IN_FORM, type=openapi.TYPE_STRING),
@@ -494,7 +464,7 @@ class ForgotPasswordResendOTP(APIView):
 
     @swagger_auto_schema(
         tags=["Authentication API's"],
-        operation_id="Forgot Password Resend OTP",
+        operation_id="forgot_password_resend_otp",
         operation_description="Forgot Password Resend OTP",
         manual_parameters=[
             openapi.Parameter('email', openapi.IN_FORM, type=openapi.TYPE_STRING),
@@ -543,7 +513,7 @@ class ResetPasswordView(APIView):
 
     @swagger_auto_schema(
         tags=["Authentication API's"],
-        operation_id="Reset Password ",
+        operation_id="reset_password ",
         operation_description="Reset Password ",
         manual_parameters=[
             openapi.Parameter('new_password', openapi.IN_FORM, type=openapi.TYPE_STRING),
@@ -583,7 +553,7 @@ class ChangePassword(APIView):
 
     @swagger_auto_schema(
         tags=["Security Setting API's"],
-        operation_id="Change Password",
+        operation_id="change_password",
         operation_description="Change Password",
         manual_parameters=[
             openapi.Parameter('current_password', openapi.IN_FORM, type=openapi.TYPE_STRING),
@@ -624,7 +594,7 @@ class DeleteAccount(APIView):
 
     @swagger_auto_schema(
         tags=["Authentication API's"],
-        operation_id="Delete Account",
+        operation_id="delete_account",
         operation_description="Delete Account",
         manual_parameters=[]
     )
@@ -634,7 +604,6 @@ class DeleteAccount(APIView):
         except:
             return Response({"message": "User matching query doesnot exist.","status":status.HTTP_400_BAD_REQUEST},status=status.HTTP_400_BAD_REQUEST)  
         user.status=DELETED
-        Events.objects.filter(created_by=user).update(status=DELETED)
         if user.username:
             user.username = user.username + str(user.id)
         user.save()
@@ -650,7 +619,7 @@ class DeactivateAccount(APIView):
 
     @swagger_auto_schema(
         tags=["Authentication API's"],
-        operation_id="Deactivate Account",
+        operation_id="deactivate_account",
         operation_description="Deactivate Account",
         manual_parameters=[]
     )
@@ -665,81 +634,6 @@ class DeactivateAccount(APIView):
         Device.objects.filter(user=user).delete()
         logout(request)
         return Response({"message":"User Account Deactivated successfully!","status":status.HTTP_200_OK},status=status.HTTP_200_OK)
-    
-
-"""
-Follow/Unfollow
-"""
-class FollowUnfollowAPI(APIView):
-    permission_classes = (permissions.AllowAny,)
-    parser_classes = [MultiPartParser]
-
-    @swagger_auto_schema(
-        tags=["Followers"],
-        operation_id="Follow/Unfollow Users",
-        operation_description="Follow/Unfollow Users",
-        manual_parameters=[
-            openapi.Parameter('user_id', openapi.IN_FORM, type=openapi.TYPE_STRING, description='User ID'),
-        ],
-    )
-    def post(self, request, *args, **kwargs):
-        if not request.data.get('user_id'):
-            return Response({"message": "Please enter user id.","status":status.HTTP_400_BAD_REQUEST},status=status.HTTP_400_BAD_REQUEST) 
-        try:
-            user = User.objects.get(id=request.data.get('user_id'))
-        except:
-            return Response({"message":"User does not exists!","status":status.HTTP_400_BAD_REQUEST},status=status.HTTP_400_BAD_REQUEST)
-        if not Followers.objects.filter(user=user,followed_by=request.user):
-            Followers.objects.create(user=user,followed_by=request.user)
-            message="User followed successfully!"
-        else:
-            Followers.objects.filter(user=user,followed_by=request.user).delete()
-            message="User unfollowed successfully!"
-        return Response({"message":message,"status":status.HTTP_200_OK}, status=status.HTTP_200_OK)
-
-
-"""
-Followers List
-"""
-class FollowersAPI(APIView):
-    permission_classes = (permissions.AllowAny,)
-    parser_classes = [MultiPartParser]
-
-    @swagger_auto_schema(
-        tags=["Followers"],
-        operation_id="Followers List",
-        operation_description="Followers List",
-        manual_parameters=[
-            openapi.Parameter('page', openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='page'),
-        ],
-    )
-    def post(self, request, *args, **kwargs):
-        followers=request.user.followers.all()
-        start,end,meta_data=GetPagesData(request.queryparams.get('page') if request.query_params.get('page') else None,followers)
-        data=MinorUserSerializer(followers,many=True,context={"request":request})
-        return Response({"data":data,"meta_data":meta_data,"status":status.HTTP_200_OK}, status=status.HTTP_200_OK)
-
-
-"""
-Following List
-"""
-class FollowingAPI(APIView):
-    permission_classes = (permissions.AllowAny,)
-    parser_classes = [MultiPartParser]
-
-    @swagger_auto_schema(
-        tags=["Followers"],
-        operation_id="Following List",
-        operation_description="Following List",
-        manual_parameters=[
-            openapi.Parameter('page', openapi.IN_QUERY, type=openapi.TYPE_INTEGER, description='page'),
-        ],
-    )
-    def post(self, request, *args, **kwargs):
-        following=request.user.following.all()
-        start,end,meta_data=GetPagesData(request.queryparams.get('page') if request.query_params.get('page') else None,following)
-        data=MinorUserSerializer(following,many=True,context={"request":request})
-        return Response({"data":data,"meta_data":meta_data,"status":status.HTTP_200_OK}, status=status.HTTP_200_OK)
 
 """
 Static Pages
@@ -750,7 +644,7 @@ class StaticPages(APIView):
 
     @swagger_auto_schema(
         tags=["Flat Pages"],
-        operation_id="Flat Pages Data",
+        operation_id="static_pages_data",
         operation_description="Flat Pages Data",
         manual_parameters=[
             openapi.Parameter('type_id', openapi.IN_FORM, type=openapi.TYPE_INTEGER, description='1 : Terms&Conditions, 2 : PrivacyPolicy, 3 : AboutUs, 4: How it works, 5: Cookie Policy'),
@@ -778,7 +672,7 @@ class FaqList(APIView):
 
     @swagger_auto_schema(
         tags=["Faq Management"],
-        operation_id="Faq's",
+        operation_id="faqs",
         operation_description="Faq's",
         manual_parameters=[
             openapi.Parameter('page',openapi.IN_QUERY,description='page',type=openapi.TYPE_INTEGER),
@@ -800,7 +694,7 @@ class ContactUsView(APIView):
     parser_classes = [MultiPartParser]
     @swagger_auto_schema(
         tags=['Contact Us'],
-        operation_id="Contact Us",
+        operation_id="contact_us",
         operation_description="Contact Us",
         manual_parameters=[
             openapi.Parameter('full_name', openapi.IN_FORM, type=openapi.TYPE_STRING),
@@ -842,7 +736,7 @@ class NotificationsList(APIView):
 
     @swagger_auto_schema(
         tags=['Notifications'],
-        operation_id="Notifications List",
+        operation_id="notifications_list",
         operation_description="Notifications List",
         manual_parameters=[
             openapi.Parameter('page', openapi.IN_QUERY, type=openapi.TYPE_INTEGER)
@@ -861,7 +755,7 @@ class ClearAllNotifications(APIView):
 
     @swagger_auto_schema(
         tags=['Notifications'],
-        operation_id="Clear All Notifications",
+        operation_id="clear_all_notifications",
         operation_description="Clear All Notifications",
         manual_parameters=[],
     )
@@ -880,7 +774,7 @@ class DeleteNotification(APIView):
 
     @swagger_auto_schema(
         tags=['Notifications'],
-        operation_id="Delete Notification",
+        operation_id="delete_notification",
         operation_description="Delete Notification",
         manual_parameters=[
             openapi.Parameter('notification_id', openapi.IN_QUERY, type=openapi.TYPE_STRING)
@@ -904,7 +798,7 @@ class MarkReadNotification(APIView):
 
     @swagger_auto_schema(
         tags=['Notifications'],
-        operation_id="Read Notification",
+        operation_id="read_notification",
         operation_description="Read Notification",
         manual_parameters=[
             openapi.Parameter('notification_id', openapi.IN_FORM, type=openapi.TYPE_STRING)
@@ -926,7 +820,7 @@ class UpdateNotificationSettings(APIView):
 
     @swagger_auto_schema(
         tags=["Notifications"],
-        operation_id="Notification Settings",
+        operation_id="notification_settings",
         operation_description="Notification Settings",
         manual_parameters=[]
     )
@@ -955,8 +849,8 @@ class UserProfileDetails(APIView):
 
     @swagger_auto_schema(
         tags=["Profile Management"],
-        operation_id="Buyer Profile",
-        operation_description="Buyer Profile",
+        operation_id="user_profile",
+        operation_description="User Profile",
         manual_parameters=[
             openapi.Parameter('user_id', openapi.IN_QUERY, type=openapi.TYPE_STRING),
         ]
@@ -982,7 +876,7 @@ class UpdateProfileDetails(APIView):
 
     @swagger_auto_schema(
         tags=["Profile Management"],
-        operation_id="Update Profile ( Buyer )",
+        operation_id="update_profile_buyer",
         operation_description="Update Profile ( Buyer )",
         manual_parameters=[
             openapi.Parameter('profile_pic', openapi.IN_FORM, type=openapi.TYPE_FILE,description='Profile Pic'),
@@ -998,14 +892,6 @@ class UpdateProfileDetails(APIView):
             openapi.Parameter('address', openapi.IN_FORM, type=openapi.TYPE_STRING ,description='Address'),
             openapi.Parameter('latitude', openapi.IN_FORM, type=openapi.TYPE_STRING ,description='Latitude'),
             openapi.Parameter('longitude', openapi.IN_FORM, type=openapi.TYPE_STRING ,description='Longitude'),
-
-            #social_links
-            openapi.Parameter('tiktok', openapi.IN_FORM, type=openapi.TYPE_STRING ,description='TikTok'),
-            openapi.Parameter('facebook', openapi.IN_FORM, type=openapi.TYPE_STRING ,description='Facebook'),
-            openapi.Parameter('instagram', openapi.IN_FORM, type=openapi.TYPE_STRING ,description='Instagram'),
-            openapi.Parameter('twitter', openapi.IN_FORM, type=openapi.TYPE_STRING ,description='Twitter'),
-            openapi.Parameter('linkedin', openapi.IN_FORM, type=openapi.TYPE_STRING ,description='LinkedIn'),
-
         ],
     )
     def patch(self, request, *args, **kwargs):
@@ -1046,21 +932,6 @@ class UpdateProfileDetails(APIView):
             user.address=request.data.get('address')
             user.latitude= request.data.get('latitude') if request.data.get('latitude') else None
             user.longitude= request.data.get('longitude') if request.data.get('longitude') else None
-        
-        if request.data.get('tiktok'):
-            user.tiktok_link = request.data.get('tiktok')
-        
-        if request.data.get('facebook'):
-            user.facebook_link = request.data.get('facebook')
-        
-        if request.data.get('instagram'):
-            user.instagram_link = request.data.get('instagram')
-        
-        if request.data.get('twitter'):
-            user.twitter_link = request.data.get('twitter')
-        
-        if request.data.get('linkedin'):
-            user.linkedin_link = request.data.get('linkedin')
 
         if request.data.get('first_name') or request.data.get('last_name'):
             user.full_name=" ".join([user.first_name,user.last_name])
@@ -1080,8 +951,8 @@ class UpdateProfileDetails(APIView):
 
 #     @swagger_auto_schema(
 #         tags=["Profile Management"],
-#         operation_id="Change Mobile Number Send OTP ( Buyer )",
-#         operation_description="Change Mobile Number Send OTP ( Buyer )",
+#         operation_id="change_mobile_number_send_otp",
+#         operation_description="Change Mobile Number Send OTP",
 #         manual_parameters=[            
 #             openapi.Parameter('mobile_no', openapi.IN_FORM, type=openapi.TYPE_STRING ,description='Mobile number'),
 #             openapi.Parameter('country_code', openapi.IN_FORM, type=openapi.TYPE_STRING,description='Country Code'),
@@ -1130,8 +1001,8 @@ class UpdateProfileDetails(APIView):
 
 #     @swagger_auto_schema(
 #         tags=["Profile Management"],
-#         operation_id="Change Mobile Number Verify OTP ( Buyer )",
-#         operation_description="Change Mobile Number Verify OTP ( Buyer )",
+#         operation_id="change_mobile_number_verify_otp",
+#         operation_description="Change Mobile Number Verify OTP",
 #         manual_parameters=[            
 #             openapi.Parameter('mobile_no', openapi.IN_FORM, type=openapi.TYPE_STRING ,description='Mobile number'),
 #             openapi.Parameter('country_code', openapi.IN_FORM, type=openapi.TYPE_STRING,description='Country Code'),
@@ -1176,7 +1047,7 @@ class UpdateProfileDetails(APIView):
 
 #     @swagger_auto_schema(
 #         tags=["Profile Management"],
-#         operation_id="Update Email Address ( Buyer )",
+#         operation_id="update_email_address",
 #         operation_description="Update Email Address ( Buyer )",
 #         manual_parameters=[
 #             openapi.Parameter('email', openapi.IN_FORM, type=openapi.TYPE_STRING,description='Email Address'),

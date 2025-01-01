@@ -279,26 +279,6 @@ def SendtextMessage(body, to_num):
     return body 
 
 
-def GetCategories():
-    default_categories = [
-        {
-        "title": "Musical Events",
-        },
-        {
-        "title": "Sports Events",
-        },
-        {
-        "title": "Carnivals",
-        },
-        {
-        "title": "Auto Expo",
-        },   
-        {
-        "title": "Exhibition Event",
-        },  
-    ]
-    return default_categories
-
 
 # def GenerateTransactionID():
 #     rand_digits = str(random.randint(1000000000, 9999999999))

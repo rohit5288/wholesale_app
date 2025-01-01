@@ -31,46 +31,6 @@
                     </div>
                 </a>
             </div>
-
-            {% comment %} <div class="col-xl-3 col-lg-4 col-sm-6 col-12">
-                <a href="{% url 'events:event_list' %}" style="color: inherit;" class="d-flex">
-                    <div class="dash-count">
-                        <div class="dash-counts">
-                            <h5>Events Created</h5>
-                            <h4>{{'total_events'|events_count}}</h4>
-                        </div>
-                        <div class="dash-imgs">
-                            <span><i class="fas fa-flag-checkered"></i></span>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-xl-3 col-lg-4 col-sm-6 col-12">
-                <a href="{% url 'events:event_list' %}?status=1" style="color: inherit;" class="d-flex">
-                    <div class="dash-count">
-                        <div class="dash-counts">
-                            <h5>Active Events</h5>
-                            <h4>{{'active_events'|events_count}}</h4>
-                        </div>
-                        <div class="dash-imgs">
-                            <span><i class="fas fa-flag-checkered"></i></span>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-xl-3 col-lg-4 col-sm-6 col-12">
-                <a href="{% url 'events:event_list' %}?created_on" style="color: inherit;" class="d-flex">
-                    <div class="dash-count">
-                        <div class="dash-counts">
-                            <h5>Complete Events</h5>
-                            <h4>{{'completed_events'|events_count}}</h4>
-                        </div>
-                        <div class="dash-imgs">
-                            <span><i class="fas fa-flag-checkered"></i></span>
-                        </div>
-                    </div>
-                </a>
-            </div> {% endcomment %}
             <div class="col-xl-3 col-lg-4 col-sm-6 col-12">
                 <a href="{% url 'contact_us:contactus_list' %}" style="color: inherit;" class="d-flex">
                     <div class="dash-count">
@@ -84,21 +44,6 @@
                     </div>
                 </a>
             </div>
-
-            {% comment %} <div class="col-xl-3 col-lg-4 col-sm-6 col-12">
-                <a href="{% url 'accounts:revenue_management' %}" style="color: inherit;" class="d-flex">
-                    <div class="dash-count">
-                        <div class="dash-counts">
-                            <h5>Total Revenue</h5>
-                            <h4>$ {{1|total_revenue}}</h4>
-                        </div>
-                        <div class="dash-imgs">
-                            <span><i class="fas fa-wallet"></i></span>
-                        </div>
-                    </div>
-                </a>
-            </div> {% endcomment %}
-
         </div>
         <div class="row">
 

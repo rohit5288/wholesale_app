@@ -483,59 +483,6 @@ class DeleteLogo(View):
         messages.error(request, 'logo Deleted Successfully!')
         return redirect('accounts:logo')
 
-
-class AddPlatformServiceFees(View):
-    @method_decorator(admin_only)
-    def post(self, request, *args, **kwargs):
-        AdminServiceFees.objects.all().delete()
-        AdminServiceFees.objects.create(service_fees=request.POST.get('service_fees'))
-        messages.error(request, 'Service Fees Updated Successfully!')
-        return redirect('events:booking_transaction_list')
-
-
-class RevenueManagement(View):
-    @method_decorator(admin_only)
-    def get(self,request,*args,**kwargs):
-        transactions = Transactions.objects.filter(status=True).order_by('-created_on').only('id')
-        if request.GET.get('weekly'):
-            transactions = transactions.filter(created_on__date__in=GetWeekDates())
-        if request.GET.get('yearly'):
-            transactions = transactions.filter(created_on__year=str(datetime.now().year))
-        if request.GET.get('monthly'):
-            transactions = transactions.filter(created_on__month=str(datetime.now().month))
-        if request.GET.get('selected_date'):
-            transactions = transactions.filter(created_on__date=request.GET.get('selected_date'))
-        if request.GET.get('transaction_type'):
-            if request.GET.get('transaction_type') == '1':
-                transactions = transactions.filter(type=SUBSCRIPTION_TRANS)
-            elif request.GET.get('transaction_type') == '2':
-                transactions = transactions.filter(type=BOOST_EVENT_TRANS)
-            elif request.GET.get('transaction_type') == '3':
-                transactions = transactions.filter(type=BOOKING_TRANS)
-            else:
-                transactions = None
-        sellers=User.objects.filter(status=ACTIVE,role_id=SELLER).order_by('full_name')
-        subscription_revenue = transactions.filter(type = SUBSCRIPTION_TRANS).aggregate(Sum("amount",default=0))['amount__sum']
-        booster_revenue = transactions.filter(type = BOOST_EVENT_TRANS).aggregate(Sum("amount",default=0))['amount__sum']
-        total_booking = transactions.filter(type=BOOKING_TRANS).aggregate(Sum("amount",default=0))['amount__sum']
-        booking_service_fee = Transactions.objects.filter(type=BOOKING_TRANS).aggregate(Sum("booking__service_fee",default=0))['booking__service_fee__sum']
-        admin_revenue = subscription_revenue + booster_revenue + booking_service_fee
-        
-        amount_received = subscription_revenue + booster_revenue + total_booking
-        return render(request, 'transactions/wallet-transactions.html',{
-            # "head_title":"Revenue Management",
-            "transactions":get_pagination(request,transactions.order_by('-created_on')),
-            "selected_date":request.GET.get('selected_date',''),
-            "transaction_type":request.GET.get('transaction_type',''),
-            "admin_revenue":admin_revenue,
-            "amount_received":amount_received,
-            'subscription_revenue':subscription_revenue,
-            'booster_revenue':booster_revenue,
-            'total_booking':total_booking,
-            'booking_service_fee':booking_service_fee,
-            'sellers':sellers
-        })
-
 class UpdateDjangoSite(View):
     @method_decorator(admin_only)
     def post(self, request, *args, **kwargs):

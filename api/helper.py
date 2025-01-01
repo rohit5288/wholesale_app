@@ -24,21 +24,6 @@ def GenerateOTP():
         return generated_otp
     return TEMP_OTP
 
-def GetFollowersCount(request,user):
-    try:
-        return Followers.objects.filter(followed_by=request.user,user=user).count()
-    except:
-        return 0
-
-def IsFollowed(request,user):
-    try:
-        if not request.user == user:
-            return Followers.objects.filter(user=user,followed_by=request.user).exists()
-        else:
-            return False
-    except:
-        return False
-
 class RequiredFieldValidations():
     def validate_field(self,request,field_name,method,error_message):
         if method.lower() == "post":

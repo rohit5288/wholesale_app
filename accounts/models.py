@@ -16,8 +16,7 @@ class CommonInfo(models.Model):
         abstract = True
 
 
-class User(AbstractUser):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+class User(AbstractUser,CommonInfo):
     username = models.CharField(max_length=255,blank=True, null=True, unique=True)
     full_name = models.CharField(max_length=255,null=True,blank=True)
     first_name = models.CharField(max_length=255,null=True,blank=True)
@@ -38,8 +37,6 @@ class User(AbstractUser):
     blog_notification =  models.BooleanField(default=True)
     email_notification = models.BooleanField(default=False)
     sms_notification = models.BooleanField(default=False)
-    created_on = models.DateTimeField(auto_now_add=True,null=True, blank=True)
-    updated_on = models.DateTimeField(auto_now=True,null=True, blank=True)
     social_id = models.CharField(max_length=255, null=True, blank=True)
     social_type = models.PositiveIntegerField(default=6,choices=SOCIAL_TYPE, null=True, blank=True)
     gender = models.PositiveIntegerField(choices=GENDER, null=True, blank=True)
@@ -49,12 +46,6 @@ class User(AbstractUser):
     address=models.TextField(null=True,blank=True)
     latitude=models.FloatField(null=True,blank=True)
     longitude=models.FloatField(null=True,blank=True)
-    #Social Links
-    tiktok_link = models.CharField(max_length=255, null=True, blank=True)
-    facebook_link = models.CharField(max_length=255, null=True, blank=True)
-    instagram_link = models.CharField(max_length=255, null=True, blank=True)
-    twitter_link = models.CharField(max_length=255, null=True, blank=True)
-    linkedin_link = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
         managed = True
@@ -63,14 +54,6 @@ class User(AbstractUser):
 
     def __str__(self):
         return str(self.first_name)
-
-
-class Followers(CommonInfo):
-    followed_by=models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True,related_name="following")
-    user=models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True,related_name="followers")
-    class Meta:
-        managed = True
-        db_table = 'tbl_followers'
 
 
 class Images(CommonInfo):

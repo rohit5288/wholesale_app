@@ -37,25 +37,3 @@ Delete Unnecessary Data
 def DeleteUnnecessaryData():
     StatusLog.objects.filter(create_datetime__lt = datetime.now()-timedelta(days=15)).delete()   
     EmailLogger.objects.filter(created_on__lt = datetime.now() - timedelta(days=15)).delete()
-
-"""
-Expire Subscription Plans
-"""
-def ExpireSubscriptionPlan():
-    expired_plans=UserPlanPurchased.objects.filter(created_on__date__lt=(datetime.now()-timedelta(days=30)).date()).exclude(is_active=False)
-    send_mail=expired_plans
-    expired_plans.update(is_active=False)
-    #send notifications to updrade your plan
-    for user in send_mail:
-        BulkSendUserEmail("",user.purchased_by,'EmailTemplates/notify_plan_upgrade.html',"Plan Updrade",user.purchased_by.email,"","","","",temp=True)
-
-"""
-Expire Event Boosted Plans
-"""
-def ExpireEventBoosterPlan():
-    expired_booster_events=BoostedEvents.objects.filter(created_on__date__lt=(datetime.now()-timedelta(days=30)).date()).exclude(is_active=False)
-    send_mail=expired_booster_events
-    expired_booster_events.update(is_active=False)
-    #send notifications to updrade your plan
-    for user in send_mail:
-        BulkSendUserEmail("",user.created_by,'EmailTemplates/notify_plan_upgrade.html',"Plan Updrade",user.purchased_by.email,"","","","",temp=True)

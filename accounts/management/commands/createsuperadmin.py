@@ -10,8 +10,6 @@ from project.settings import *
 env = environ.Env()
 environ.Env.read_env()
 
-
-# Function to create migrations folder with __init__.py file
 class Command(BaseCommand):
     help =  """
             Create Default Super Admin

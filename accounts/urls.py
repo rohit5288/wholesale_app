@@ -51,12 +51,6 @@ urlpatterns = [
     re_path(r'^add-logo/$',AddLogo.as_view(),name='add_logo'),
     re_path(r'^edit-logo/(?P<id>[-\w]+)/$',EditLogo.as_view(),name='edit_logo'),
     re_path(r'^delete-logo/(?P<id>[-\w]+)/$',DeleteLogo.as_view(),name='delete_logo'),
-
-    #Platform Service Fees
-    re_path(r'^add-service-fees/$',AddPlatformServiceFees.as_view(),name='add_service_fees'),
-
-    #Revenue
-    re_path(r'revenue-management/$',RevenueManagement.as_view(),name="revenue_management"),
     
     #Django Site Settings
     re_path(r'^update-django-site/$', UpdateDjangoSite.as_view(), name='update_django_site'),

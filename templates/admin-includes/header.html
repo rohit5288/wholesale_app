@@ -100,7 +100,7 @@
  
                                     <li class="notification-message">
                                         {% if notification.notification_type == 1 %}
-                                        <a href="{% url 'events:view_event_details' notification.obj_id %}?n_id={{notification.id}}"> 
+                                        <a href="#?n_id={{notification.id}}"> 
                                         {% elif notification.notification_type == 2 %}
                                         <a href="{% url 'products:view_payment_request' notification.payment_request.id %}">
                                         {% endif %}
@@ -188,7 +188,6 @@
                             <a class="dropdown-item" href="{% url 'users:view_user' request.user.id %}"> My Profile <i class="fas fa-user"></i></a>
                             <a class="dropdown-item" href="{% url 'users:edit_admin' request.user.id %}">Update Profile <i class="fa fa-edit"></i></a>
                             <a class="dropdown-item" href="{% url 'accounts:change_password' %}"> Change Password <i class="fas fa-unlock-alt"></i> </a>
-                            {% comment %} <a class="dropdown-item" href="{% url 'accounts:revenue_management' %}"> Revenue<i class="fas fa-wallet"></i> </a> {% endcomment %}
                             <hr class="m-0">
                             <a class="dropdown-item logout" href="{% url 'accounts:logout' %}"> Logout <i class="fas fa-sign-out-alt"></i></a>
                         </div>
@@ -224,88 +223,9 @@
                             <li {% if head_title == "Sellers Management" or head_title == 'Seller Profile' %} class="active" {% endif %}>
                                 <a href="{% url 'sellers:seller_list' %}" onclick="Loader()"><i class="fas fa-users"></i><span>Sellers</span></a>
                             </li>
-
-                            {% comment %} <li class="submenu {% if head_title == "Subscription Plans Management" or head_title == "Event Booster Plan Management" %}active {% endif %}">
-                                <a href="javascript:void(0);"><i class="fas fa-credit-card-front"></i><span> Plans</span>
-                                    <span class="menu-arrow"></span>
-                                </a>
-                                <ul>
-                                    <li>
-                                        <a {% if head_title == 'Subscription Plans Management' %} class="active" {% endif %} href="{% url 'subscriptions:all_plans' %}" onclick="Loader()">
-                                            Subscription Plans
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a {% if head_title == 'Event Booster Plan Management' %} class="active" {% endif %} href="{% url 'subscriptions:all_booster_plans' %}" onclick="Loader()">
-                                            Event Booster Plans
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li> {% endcomment %}
-
-                            {% comment %} <li {% if head_title == "Subscription Plans Management"  %} class="active" {% endif %}>
-                                <a href="{% url 'subscriptions:all_plans' %}"><i class="fas fa-credit-card-front"></i><span>Plans</span></a>
-                            </li> {% endcomment %}
-
-                            {% comment %} <li {% if head_title == "Blog Management"  %} class="active" {% endif %}>
-                                <a href="{% url 'blog:blog_list' %}" onclick="Loader()"><i class="fas fa-blog"></i><span>Blogs</span></a>
-                            </li> {% endcomment %}
                             <li {% if head_title == "Contact Us Management" %} class="active" {% endif %}>
                                 <a href="{% url 'contact_us:contactus_list' %}" onclick="Loader()"><i class="fas fa-address-book"></i><span>Contact Us</span></a>
                             </li> 
-                            {% comment %} <li {% if head_title == "Banners Management" %} class="active" {% endif %}>
-                                <a href="{% url 'accounts:banners_list' %}" onclick="Loader()"><i class="fas fa-flag"></i><span>Banners</span></a>
-                            </li>  {% endcomment %}
-                            {% comment %} <li class="submenu {% if head_title == 'Events Management' or head_title == 'Category Management' %}active {% endif %}">
-                                <a href="javascript:void(0);"><i class="far fa-calendar-star"></i></i><span> Events</span>
-                                    <span class="menu-arrow"></span>
-                                </a>
-                                <ul>
-                                    <li>
-                                        <a {% if head_title == 'Category Management' %} class="active" {% endif %} href="{% url 'events:event_category_list' %}" onclick="Loader()">
-                                            Categories
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a {% if head_title == 'Events Management' %} class="active" {% endif %} href="{% url 'events:event_list' %}" onclick="Loader()">
-                                            Events
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li {% if head_title == "Bookings Management" %} class="active" {% endif %}>
-                                <a href="{% url 'events:bookings_list' %}" onclick="Loader()"><i class="fas fa-calendar-check"></i><span>Bookings</span></a>
-                            </li> 
-                            <li class="submenu {% if head_title == 'Subscription Transactions Management' or head_title == 'Events Booking Management' or head_title == 'Boosted Events Management' %}active {% endif %}">
-                                <a href="javascript:void(0);"><i class="fas fa-dollar-sign"></i><span> Transactions</span>
-                                    <span class="menu-arrow"></span>
-                                </a>
-                                <ul>    
-                                    <li>
-                                        <a {% if head_title == 'Subscription Transactions Management' %} class="active" {% endif %} href="{% url 'events:subscription_transaction_list' %}" onclick="Loader()">
-                                            Subscriptions
-                                        </a>
-                                    </li>
-
-                                    <li>
-                                        <a {% if head_title == 'Events Booking Management' %} class="active" {% endif %} href="{% url 'events:booking_transaction_list' %}" onclick="Loader()">
-                                            Event Bookings
-                                        </a>
-                                    </li>
-
-                                    <li>
-                                        <a {% if head_title == 'Boosted Events Management' %} class="active" {% endif %} href="{% url 'events:booster_transaction_list' %}" onclick="Loader()">
-                                            Boosted Events
-                                        </a>
-                                    </li>
-
-                                </ul>
-                            </li> {% endcomment %}
-                         
-                            {% comment %} <li {% if head_title == "Transactions Management" %} class="active" {% endif %}>
-                                <a href="{% url 'events:transaction_list' %}"><i class="fas fa-dollar-sign"></i><span>Transactions</span></a>
-                            </li>  {% endcomment %}
-
                             <li class="submenu {% if head_title == "Login History" or head_title == 'Notifications Management' or head_title == 'Pages Management' or head_title == 'Backup Management' %}active {% endif %}">
                                 <a href="javascript:void(0);"><i class="fas fa-users-cog"></i><span> Settings</span>
                                     <span class="menu-arrow"></span></a>
@@ -320,11 +240,11 @@
                                             Backup
                                         </a>
                                     </li>
-                                    <li>
+                                    {% comment %} <li>
                                         <a {% if head_title == 'Cronjob Management' %} class="active" {% endif %} href="{% url 'accounts:list_cronjob' %}" onclick="Loader()" >
                                             Cronjobs
                                         </a>
-                                    </li>
+                                    </li> {% endcomment %}
                                     <li>
                                         <a {% if head_title == 'Login History Management' %} class="active" {% endif %} href="{% url 'accounts:login_history' %}" onclick="Loader()">
                                             Login History 
@@ -340,7 +260,7 @@
                                             FAQs 
                                         </a>
                                     </li>
-                                    <li>
+                                    {% comment %} <li>
                                         <a {% if head_title == 'SMTP Management' %} class="active" {% endif %} href="{% url 'credentials:smtp_list' %}" onclick="Loader()">
                                             Smtp Settings 
                                         </a>
@@ -354,7 +274,7 @@
                                         <a {% if head_title == 'Firebase Management' %} class="active" {% endif %} href="{% url 'credentials:firebase_credentials_list' %}" onclick="Loader()">
                                             Firebase
                                         </a>
-                                    </li>
+                                    </li> {% endcomment %}
                                     {% comment %} <li>
                                         <a {% if head_title == 'Logo Management' %} class="active" {% endif %} href="{% url 'accounts:logo' %}" onclick="Loader()">
                                             Logo

@@ -180,6 +180,8 @@ class CreateCrashLog(APIView):
     permission_classes = (permissions.AllowAny,)
     parser_classes = [MultiPartParser]
     @swagger_auto_schema(
+        tags=['Application Crash log'],
+        operation_id="create_application_crash_log",
         operation_description="Create application crash log",
         manual_parameters=[
             openapi.Parameter('error', openapi.IN_FORM, type=openapi.TYPE_STRING),
@@ -188,8 +190,6 @@ class CreateCrashLog(APIView):
             openapi.Parameter('user_ip', openapi.IN_FORM, type=openapi.TYPE_STRING),
             openapi.Parameter('description', openapi.IN_FORM, type=openapi.TYPE_STRING),
         ],
-        tags=['Application Crash log'],
-        operation_id="Create application crash log",
     )
     def post(self, request, *args, **kwargs):
         try:
@@ -209,12 +209,12 @@ class GetCrashLog(APIView):
     permission_classes = (permissions.AllowAny,)
     parser_classes = [MultiPartParser]
     @swagger_auto_schema(
+        tags=['Application Crash log'],
+        operation_id="get_application_crash_log",
         operation_description="Get application crash log",
         # manual_parameters=[
         #     openapi.Parameter('id', openapi.IN_QUERY, type=openapi.TYPE_STRING)
         # ],
-        tags=['Application Crash log'],
-        operation_id="Get application crash log",
     )
     def get(self, request, *args, **kwargs):
         try:

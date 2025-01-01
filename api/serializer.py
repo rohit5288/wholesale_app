@@ -9,16 +9,6 @@ from api.helper import *
 class UserSerializer(ModelSerializer):
     token = SerializerMethodField(read_only=True)
     profile_pic =SerializerMethodField()
-    is_followed=SerializerMethodField()
-    followers_count=SerializerMethodField()
-    
-    def get_is_followed(self,obj):
-        request=self.context.get('request')
-        return IsFollowed(request,obj)
-    
-    def get_followers_count(self,obj):
-        request=self.context.get('request')
-        return GetFollowersCount(request,obj)
     
     def get_profile_pic(self,obj):
         url=self.context.get('request').build_absolute_uri(obj.profile_pic.url) if obj.profile_pic else "" 
@@ -39,23 +29,12 @@ class UserSerializer(ModelSerializer):
         model=User
         fields= ("id","first_name","last_name","full_name","gender","dob","role_id","address","latitude","longitude","last_login","profile_pic","email",
                  "mobile_no","country_code","country_iso_code","status","temp_otp","is_verified","is_profile_setup",
-                 "notification_enable","token","created_on","updated_on","is_followed","followers_count",
-                "tiktok_link","facebook_link","instagram_link","twitter_link","linkedin_link")
+                 "notification_enable","token","created_on","updated_on",)
 
 
 class SellerSerializer(ModelSerializer):
     token = SerializerMethodField(read_only=True)
     profile_pic=SerializerMethodField()
-    is_followed=SerializerMethodField()
-    followers_count=SerializerMethodField()
-    
-    def get_is_followed(self,obj):
-        request=self.context.get('request')
-        return IsFollowed(request,obj)
-    
-    def get_followers_count(self,obj):
-        request=self.context.get('request')
-        return GetFollowersCount(request,obj)
     
     def get_profile_pic(self,obj):
         url=self.context.get('request').build_absolute_uri(obj.profile_pic.url) if obj.profile_pic else "" 
@@ -75,8 +54,7 @@ class SellerSerializer(ModelSerializer):
         model=User
         fields= ("id","first_name","last_name","full_name","gender","dob","role_id","address","latitude","longitude","last_login","profile_pic","email",
                  "mobile_no","country_code","country_iso_code","status","temp_otp","is_verified","is_profile_setup",
-                 "notification_enable","token","created_on","updated_on","is_followed","followers_count",
-                "tiktok_link","facebook_link","instagram_link","twitter_link","linkedin_link")
+                 "notification_enable","token","created_on","updated_on")
 
 
 class MinorUserSerializer(ModelSerializer):

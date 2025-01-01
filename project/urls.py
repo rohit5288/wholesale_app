@@ -57,7 +57,7 @@ urlpatterns = [
     re_path(r'^contact-us/', include('contact_us.urls',)),
     re_path(r'^credentials/', include('credentials.urls',)),
     re_path(r'^sellers/', include('sellers.urls',)),
-    re_path(r'^chat/', include('chat.urls',)),
+    # re_path(r'^chat/', include('chat.urls',)),
     re_path(r'^media/(?P<path>.*)$', serve,{'document_root': settings.MEDIA_ROOT}), 
     re_path(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}), 
 ]
