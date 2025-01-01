@@ -47,10 +47,7 @@ INSTALLED_APPS = [
     'backup',
     'contact_us',
     'credentials',
-    'subscriptions',
     'sellers',
-    'events',
-    'blog',
     'chat',
 ]
 

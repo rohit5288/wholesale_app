@@ -25,7 +25,6 @@ import qrcode
 import os
 from django.core.mail import get_connection
 from credentials.models import *
-from events.models import *
 from sellers.models import *
 from twilio.rest import Client
 from typing import List
@@ -300,38 +299,18 @@ def GetCategories():
     ]
     return default_categories
 
-def EventRatingsBars(request,id,total_count):
-    five_star=5,round((EventRatingReviews.objects.filter(event=id,rating=5).count()/total_count)*100)
-    four_star=4,round((EventRatingReviews.objects.filter(event=id,rating__range=[4, 4.9]).count()/total_count)*100)
-    three_star=3,round((EventRatingReviews.objects.filter(event=id,rating__range=[3, 3.9]).count()/total_count)*100)
-    two_star=2,round((EventRatingReviews.objects.filter(event=id,rating__range=[2, 2.9]).count()/total_count)*100)
-    one_star=1,round((EventRatingReviews.objects.filter(event=id,rating__range=[0.1, 1.9]).count()/total_count)*100)
-    return five_star,four_star,three_star,two_star,one_star
 
-
-def GenerateTransactionID():
-    rand_digits = str(random.randint(1000000000, 9999999999))
-    rand_lower_string = "".join(str(random.choice(string.ascii_lowercase)) for i in range(8))
-    rand_upper_string = "".join(str(random.choice(string.ascii_uppercase)) for i in range(6))
-    code=list(rand_lower_string+rand_upper_string+rand_digits)
-    random.shuffle(code)
-    generated_id="txn_"+"".join(code)
-    if Transactions.objects.filter(transaction_id = generated_id):
-        GenerateTransactionID()
-    else:
-        return generated_id
-
-def GenerateTicketID():
-    try:
-        code = list("".join(str(random.choice(string.ascii_uppercase)) for i in range(8)))
-        random.shuffle(code)
-        if Tickets.objects.filter(ticket_id=code):
-            GenerateTicketID()
-        else:
-            return "".join(code)
-    except Exception as e:
-         db_logger.exception(e)
-         return None
+# def GenerateTransactionID():
+#     rand_digits = str(random.randint(1000000000, 9999999999))
+#     rand_lower_string = "".join(str(random.choice(string.ascii_lowercase)) for i in range(8))
+#     rand_upper_string = "".join(str(random.choice(string.ascii_uppercase)) for i in range(6))
+#     code=list(rand_lower_string+rand_upper_string+rand_digits)
+#     random.shuffle(code)
+#     generated_id="txn_"+"".join(code)
+#     if Transactions.objects.filter(transaction_id = generated_id):
+#         GenerateTransactionID()
+#     else:
+#         return generated_id
     
 def GeneratePromoCode():
     try:
@@ -388,7 +367,6 @@ def GenerateQRCode(ticket):
         ticket.delete()
         return False  
 
-def GenerateTickets(request,booking:Booking):
     tickets=[]
     for i in range(booking.no_of_tickets):
         ticket_id=GenerateTicketID()
@@ -430,15 +408,5 @@ def CreateUserActivityLog(title:str,description:str,user:User,activity_type:int,
             object_id = object_id
         )
      except Exception as e:
-        db_logger.exception(e)
-
-def AddUserRecentViews(request,event:Events):
-    try:
-        user_view,created=RecnentlyViewedEvents.objects.get_or_create(user=request.user,event=event)
-        user_view.save()
-        events_viewed=RecnentlyViewedEvents.objects.filter(user=request.user).order_by('-updated_on')
-        events_viewed=events_viewed[:10]
-        events_viewed.delete()
-    except Exception as e:
         db_logger.exception(e)
 

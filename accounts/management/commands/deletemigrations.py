@@ -5,7 +5,6 @@ from django.contrib.sites.models import Site
 import environ
 from django.contrib.auth.hashers import make_password
 from accounts.utils import *
-from subscriptions.models import *
 from django.db.migrations.recorder import MigrationRecorder
 from project.settings import *
 

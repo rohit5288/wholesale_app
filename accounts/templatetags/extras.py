@@ -1,6 +1,5 @@
 from django import template
 from accounts.views import *
-from events.models import *
 from contact_us.models import *
 register = template.Library()
 import environ
@@ -73,18 +72,6 @@ def sellers_count(key):
 		count=User.objects.filter(role_id=SELLER).count()
 	return count
 
-
-@register.filter(name='events_count')
-def events_count(key):
-	events_count = 0
-	if key == 'total_events':
-		events_count = Events.objects.all().count()
-	if key == 'active_events':
-		events_count = Events.objects.filter(status=ACTIVE).count()
-	if key == 'completed_events':
-		events_count = Events.objects.filter(created_on__lt = datetime.now()).count()
-	return events_count
-
 @register.filter(name='contact_us_count')
 def contact_us_count(key):
 	contact_us_count = ContactUs.objects.all().count()	
@@ -96,16 +83,6 @@ def dashboard_data(key):
 		return User.objects.filter(created_on__date=datetime.now().date()).exclude(role_id=ADMIN)[0:3]
 	if key == "card_today":
 		return 0
-
-@register.filter(name='total_revenue')
-def total_revenue(key):
-	transactions = Transactions.objects.filter(status=True).order_by('-created_on').only('id')
-	subscription_revenue = transactions.filter(type = SUBSCRIPTION_TRANS).aggregate(Sum("amount",default=0))['amount__sum']
-	booster_revenue = transactions.filter(type = BOOST_EVENT_TRANS).aggregate(Sum("amount",default=0))['amount__sum']
-	booking_service_fee = Transactions.objects.filter(type=BOOKING_TRANS).aggregate(Sum("booking__service_fee",default=0))['booking__service_fee__sum']
-	admin_revenue = subscription_revenue + booster_revenue + booking_service_fee
-	return admin_revenue
-#Dashboard template tags end
 
 @register.filter(name='today_date')
 def today_date(key):
