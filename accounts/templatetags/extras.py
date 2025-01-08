@@ -1,6 +1,7 @@
 from django import template
 from accounts.views import *
 from contact_us.models import *
+from products.models import *
 register = template.Library()
 import environ
 env = environ.Env()
@@ -27,12 +28,17 @@ def order_by(queryset,field):
 	
 @register.filter(name='total_customers')
 def total_customers(key):
-	return User.objects.filter(role_id=BUYER).count()
+	return User.objects.filter(role_id=BUYER).exclude(temp=True).count()
 
 @register.filter(name='notifications_list')
 def notifications_list(key):
 	admin = User.objects.get(is_superuser=True, role_id=ADMIN)
 	return Notifications.objects.filter(created_for=admin, is_read=False).order_by('-created_on')
+
+@register.filter(name='categories_list')
+def categories_list(key):
+	categories = ProductCategory.objects.all().order_by('-created_on')
+	return categories
 
 @register.filter(name="unread_notifications_count")
 def unread_notifications_count(request):
@@ -50,26 +56,26 @@ def unread_notifications_count(request):
 def users_count(key):
 	count=0
 	if key=='active_user':
-		count=User.objects.filter(role_id=BUYER,status=ACTIVE).count()
+		count=User.objects.filter(role_id=BUYER,status=ACTIVE).exclude(temp=True).count()
 	elif key=='inactive_user':
-		count=User.objects.filter(role_id=BUYER,status=INACTIVE).count()
+		count=User.objects.filter(role_id=BUYER,status=INACTIVE).exclude(temp=True).count()
 	elif key=='deleted_user':
-		count=User.objects.filter(role_id=BUYER,status=DELETED).count()
+		count=User.objects.filter(role_id=BUYER,status=DELETED).exclude(temp=True).count()
 	elif key=='total_user':
-		count=User.objects.filter(role_id=BUYER).count()
+		count=User.objects.filter(role_id=BUYER).exclude(temp=True).count()
 	return count
 
 @register.filter(name='sellers_count')
 def sellers_count(key):
 	count=0
 	if key=='active_user':
-		count=User.objects.filter(role_id=SELLER,status=ACTIVE).count()
+		count=User.objects.filter(role_id=SELLER,status=ACTIVE).exclude(temp=True).count()
 	elif key=='inactive_user':
-		count=User.objects.filter(role_id=SELLER,status=INACTIVE).count()
+		count=User.objects.filter(role_id=SELLER,status=INACTIVE).exclude(temp=True).count()
 	elif key=='deleted_user':
-		count=User.objects.filter(role_id=SELLER,status=DELETED).count()
+		count=User.objects.filter(role_id=SELLER,status=DELETED).exclude(temp=True).count()
 	elif key=='total_user':
-		count=User.objects.filter(role_id=SELLER).count()
+		count=User.objects.filter(role_id=SELLER).exclude(temp=True).count()
 	return count
 
 @register.filter(name='contact_us_count')
@@ -80,7 +86,7 @@ def contact_us_count(key):
 @register.filter(name='dashboard_data')
 def dashboard_data(key):
 	if key == "customers_today":
-		return User.objects.filter(created_on__date=datetime.now().date()).exclude(role_id=ADMIN)[0:3]
+		return User.objects.filter(created_on__date=datetime.now().date()).exclude(role_id=ADMIN,temp=True)[0:3]
 	if key == "card_today":
 		return 0
 

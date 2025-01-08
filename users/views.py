@@ -119,7 +119,7 @@ class ActivateUser(View):
 class BuyersList(View):
     @method_decorator(admin_only)
     def get(self, request, *args, **kwargs):
-        users = User.objects.filter(role_id=BUYER).order_by('-created_on').only('id')
+        users = User.objects.filter(role_id=BUYER).exclude(temp=True).order_by('-created_on').only('id')
         if request.GET.get('username'):
             users = users.filter(username__icontains = request.GET.get('username').strip())
         if request.GET.get('full_name'):

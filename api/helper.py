@@ -17,11 +17,11 @@ def SendOTPSMS(user):
         return False
 
 def GenerateOTP():
-    generated_otp = random.randint(1111,9999)
-    if User.objects.filter(temp_otp = generated_otp):
-        GenerateOTP()
-    else:
-        return generated_otp
+    # generated_otp = random.randint(1111,9999)
+    # if User.objects.filter(temp_otp = generated_otp):
+    #     GenerateOTP()
+    # else:
+    #     return generated_otp
     return TEMP_OTP
 
 class RequiredFieldValidations():

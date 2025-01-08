@@ -13,7 +13,7 @@ from django.views.generic import TemplateView,View
 from accounts.constants import *
 from django.utils.decorators import method_decorator
 from accounts.decorators import *
-from django.shortcuts import render , redirect
+from django.shortcuts import render , redirect, HttpResponseRedirect
 from django.http import JsonResponse
 from django.contrib import messages
 from django.db.models import Exists,OuterRef
@@ -27,7 +27,7 @@ from rest_framework.serializers import ModelSerializer, SerializerMethodField, C
 from rest_framework import status,permissions
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-from rest_framework.parsers import MultiPartParser
+from rest_framework.parsers import MultiPartParser,FormParser
 import stripe
 
 env = environ.Env()

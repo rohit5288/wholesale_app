@@ -124,96 +124,86 @@ class UserSignupView(APIView):
 Verify Otp
 '''
 class VerifyOTP(APIView):
-    permission_classes = (permissions.AllowAny,)
-    parser_classes = [MultiPartParser]
+    permission_classes = (permissions.IsAuthenticated,)
+    parser_classes = [FormParser]
 
     @swagger_auto_schema(
         tags=["Authentication API's"],
         operation_id="verify_otp",
         operation_description="Verify OTP",
         manual_parameters=[
-            openapi.Parameter('email', openapi.IN_FORM, type=openapi.TYPE_STRING),
-            openapi.Parameter('mobile_no', openapi.IN_FORM, type=openapi.TYPE_STRING),
-            openapi.Parameter('country_code', openapi.IN_FORM, type=openapi.TYPE_STRING),
             openapi.Parameter('otp', openapi.IN_FORM, type=openapi.TYPE_STRING),
+            openapi.Parameter('device_type', openapi.IN_FORM, type=openapi.TYPE_NUMBER, description=('1 for Android and 2 for IOS')),
+            openapi.Parameter('device_name', openapi.IN_FORM, type=openapi.TYPE_STRING),
+            openapi.Parameter('device_token', openapi.IN_FORM, type=openapi.TYPE_STRING),
         ]
     )
     def post(self, request, *args, **kwargs):
-        if request.data.get('email'):
-            try:
-                # user = User.objects.get(id=request.user.id)
-                user = User.objects.get(status=ACTIVE,email = request.data.get('email'))
-            except:
-                return Response({"message":"User doesn't exist!","status":status.HTTP_400_BAD_REQUEST},status=status.HTTP_400_BAD_REQUEST)
-        else:
-            try:
-                # user = User.objects.get(id=request.user.id)
-                user = User.objects.get(status=ACTIVE,mobile_no = request.data.get('mobile_no'),country_code=request.data.get('country_code'))
-            except:
-                return Response({"message":"User doesn't exist!","status":status.HTTP_400_BAD_REQUEST},status=status.HTTP_400_BAD_REQUEST)
+        ## Validate Required Fields
+        required_fields = list(filter(None, [
+            RequiredFieldValidations.validate_field(self,request,'otp',"post","Please enter role id"),
+            # RequiredFieldValidations.validate_field(self,request,'device_type',"post","Please enter device type"),
+            # RequiredFieldValidations.validate_field(self,request,'device_name',"post","Please enter device name"),
+            # RequiredFieldValidations.validate_field(self,request,'device_token',"post","Please enter device token"),
+        ]))
+        try:
+            user = User.objects.get(id=request.user.id)
+        except:
+            return Response({"message":"User doesn't exist!","status":status.HTTP_400_BAD_REQUEST},status=status.HTTP_400_BAD_REQUEST)
         if not request.data.get('otp'):
             return Response({"message":"Please enter otp","status":status.HTTP_400_BAD_REQUEST},status=status.HTTP_400_BAD_REQUEST)
         if user.temp_otp == request.data.get('otp'):
             user.temp_otp = ''
-            user.is_verified = True
+            message="Logged in successfully!"
+            if user.temp:
+                message="User registered successfully!"
+                user.temp = False
             user.save()
+            # Device.objects.filter(device_token=request.data['device_token']).delete()
+            # try:
+            #     device = Device.objects.get(user = user)
+            # except Device.DoesNotExist:
+            #     device = Device.objects.create(user = user)
+            # device.device_type = request.data['device_type']
+            # device.device_name = request.data['device_name']
+            # device.device_token = request.data['device_token']
+            # device.save()
             Token.objects.filter(user=user).delete()
-            data = UserSerializer(user,context = {"request":request}).data
-            return Response({"message":"OTP Verified Successfully.","data":data,"status":status.HTTP_200_OK},status=status.HTTP_200_OK)
+            if user.role_id == BUYER:
+                data = UserSerializer(user,context = {"request":request}).data
+            else:
+                data = SellerSerializer(user,context = {"request":request}).data
+            return Response({"message":message,"data":data,"status":status.HTTP_200_OK},status=status.HTTP_200_OK)
         else:
             return Response({"message":"Incorrect OTP","status":status.HTTP_400_BAD_REQUEST},status=status.HTTP_400_BAD_REQUEST)
-
 
 '''
 Resend Otp
 '''
 class ResendOTP(APIView):
-    permission_classes = (permissions.AllowAny,)
-    parser_classes = [MultiPartParser]
+    permission_classes = (permissions.IsAuthenticated,)
+    parser_classes = [FormParser]
 
     @swagger_auto_schema(
         tags=["Authentication API's"],
         operation_id="resend_otp",
         operation_description="Resend OTP",
-        manual_parameters=[
-            openapi.Parameter('email', openapi.IN_FORM, type=openapi.TYPE_STRING),
-            openapi.Parameter('mobile_no', openapi.IN_FORM, type=openapi.TYPE_STRING),
-            openapi.Parameter('country_code', openapi.IN_FORM, type=openapi.TYPE_STRING),
-        ]
     )
-    def post(self, request, *args, **kwargs):
-        if request.data.get('email'):
-            try:
-                user = User.objects.get(status=ACTIVE,email = request.data.get('email'))
-                # user = User.objects.get(id=request.user.id)
-            except:
-                return Response({"message":"User doesn't exist!","status":status.HTTP_400_BAD_REQUEST},status=status.HTTP_400_BAD_REQUEST)
-            try:
-                OTP = GenerateOTP()
-                user.temp_otp =  OTP
-                user.save()
-                # SendtextMessage(f"Enter {OTP} on <ProjectName> to verify your account.", to_num )
-                if user.email:
-                    BulkSendUserEmail(request,user,'EmailTemplates/VerifyOTP.html','Account Verification',request.POST.get("email"),"","",user.temp_otp,"")
-                message=f"An OTP {user.temp_otp} has been sent on your email to verify your account."
-            except Exception as e:
-                db_logger.exception(e)
-                return Response({"message":"Something went wrong!","status":status.HTTP_400_BAD_REQUEST},status=status.HTTP_400_BAD_REQUEST)
-        else:
-            try:
-                user = User.objects.get(status=ACTIVE,mobile_no = request.data.get('mobile_no'),country_code = request.data.get('country_code'))
-            except:
-                return Response({"message":"User doesn't exist!","status":status.HTTP_400_BAD_REQUEST},status=status.HTTP_400_BAD_REQUEST)
-            try:
-                OTP = GenerateOTP()
-                user.temp_otp =  OTP
-                user.save()
-                to_num = user.country_code + user.mobile_no
-                # SendtextMessage(f"Enter {OTP} on <ProjectName> to verify your account.", to_num )
-                message=f"An OTP {user.temp_otp} has been sent on your mobile number to verify your account."
-            except Exception as e:
-                db_logger.exception(e)
-                return Response({"message":"Something went wrong!","status":status.HTTP_400_BAD_REQUEST},status=status.HTTP_400_BAD_REQUEST)
+    def get(self, request, *args, **kwargs):
+        try:
+            user = User.objects.get(id=request.user.id)
+        except:
+            return Response({"message":"User doesn't exist!","status":status.HTTP_400_BAD_REQUEST},status=status.HTTP_400_BAD_REQUEST)
+        try:
+            OTP = GenerateOTP()
+            user.temp_otp =  OTP
+            user.save()
+            to_num = f"{user.country_code}{user.mobile_no}"
+            # SendtextMessage(f"Enter {OTP} on <ProjectName> to verify your account.", to_num )
+            message=f"An OTP {user.temp_otp} has been sent on your mobile number to verify your account."
+        except Exception as e:
+            db_logger.exception(e)
+            return Response({"message":"Something went wrong!","status":status.HTTP_400_BAD_REQUEST},status=status.HTTP_400_BAD_REQUEST)
         return Response({"message":message,"status":status.HTTP_200_OK},status=status.HTTP_200_OK)
 
 
@@ -222,7 +212,7 @@ Check User Email
 """
 class CheckUserEmail(APIView):
     permission_classes = (permissions.AllowAny,)
-    parser_classes = [MultiPartParser]
+    parser_classes = [FormParser]
 
     @swagger_auto_schema(
         tags=["Authentication API's"],
@@ -247,7 +237,7 @@ class CheckUserEmail(APIView):
 
 class UserLoginView(APIView):
     permission_classes = (permissions.AllowAny,)
-    parser_classes = [MultiPartParser]
+    parser_classes = [FormParser]
 
     @swagger_auto_schema(
         tags=["Authentication API's"],
@@ -255,94 +245,58 @@ class UserLoginView(APIView):
         operation_description="User Login",
         manual_parameters=[
             openapi.Parameter('role_id', openapi.IN_FORM, type=openapi.TYPE_NUMBER,description='2 for Buyer and 3 for Seller'),
-            openapi.Parameter('email', openapi.IN_FORM, type=openapi.TYPE_STRING,description='Email Address'),
             openapi.Parameter('mobile_no', openapi.IN_FORM, type=openapi.TYPE_STRING,description='Mobile Number'),
             openapi.Parameter('country_code', openapi.IN_FORM, type=openapi.TYPE_STRING,description='Country Code'),
-            openapi.Parameter('password', openapi.IN_FORM, type=openapi.TYPE_STRING,description='Password'),
-            # openapi.Parameter('device_type', openapi.IN_FORM, type=openapi.TYPE_NUMBER, description=('1 for Android and 2 for IOS')),
-            # openapi.Parameter('device_name', openapi.IN_FORM, type=openapi.TYPE_STRING),
-            # openapi.Parameter('device_token', openapi.IN_FORM, type=openapi.TYPE_STRING),
+            openapi.Parameter('country_iso_code', openapi.IN_FORM, type=openapi.TYPE_STRING,description='Country Code'),
         ]
     )
-
     def post(self, request, *args, **kwargs):
-        if not request.data.get('email') and not request.data.get('mobile_no'):
-            return Response({"message":"Please login using mobile number or email","status":status.HTTP_400_BAD_REQUEST}, status=status.HTTP_400_BAD_REQUEST)
-        
         ## Validate Required Fields
         required_fields = list(filter(None, [
             RequiredFieldValidations.validate_field(self,request,'role_id',"post","Please enter role id"),
-            RequiredFieldValidations.validate_field(self,request,'password',"post","Please enter password"),
+            RequiredFieldValidations.validate_field(self,request,'mobile_no',"post","Please enter mobile number"),
+            RequiredFieldValidations.validate_field(self,request,'country_code',"post","Please enter country code"),
+            RequiredFieldValidations.validate_field(self,request,'country_iso_code',"post","Please enter country iso code"),
         ]))
-        if request.data.get("mobile_no"):
-            if not request.data.get("country_code"):
-                return Response({"message":"Please enter country code","status":status.HTTP_400_BAD_REQUEST},status=status.HTTP_400_BAD_REQUEST)
-
-        if request.data.get('email'):
-            try:
-                user = UserAuthenticate(email = request.data.get("email").strip(),country_code=None,password = request.data.get("password").strip())
-            except:
-                CreateLoginHistory(request,request.data.get('email'),None,LOGIN_FAILURE,None)
-                return Response({"message":"Invalid Login Credentials.", "status":status.HTTP_400_BAD_REQUEST},status=status.HTTP_400_BAD_REQUEST)
-        else:
-            try:
-                user = UserAuthenticate(email = request.data.get("mobile_no").strip(),country_code=request.data.get("country_code").strip(),password = request.data.get("password").strip())
-            except:
-                CreateLoginHistory(request,None, request.data.get("mobile_no").strip(),LOGIN_FAILURE,request.data.get("country_code").strip())
-                return Response({"message":"Invalid Login Credentials.", "status":status.HTTP_400_BAD_REQUEST},status=status.HTTP_400_BAD_REQUEST)    
-        if not user:
-            if request.data.get('email'):
-                CreateLoginHistory(request,request.data.get('email'),None,LOGIN_FAILURE,None)
-            if request.data.get('mobile_no'):
-                CreateLoginHistory(request,None, request.data.get("mobile_no").strip(),LOGIN_FAILURE,request.data.get("country_code").strip())
-            return Response({"message":"Invalid Login Credentials.", "status":status.HTTP_400_BAD_REQUEST},status=status.HTTP_400_BAD_REQUEST)
-
+        if User.objects.filter(status=ACTIVE,mobile_no=request.data.get('mobile_no'),country_code=request.data.get('country_code')).exclude(role_id=request.data.get('role_id')):
+            role="Buyer" if int(request.data.get('role_id')) != BUYER else "Seller"
+            return Response({"message":f"There is already a registered user with this mobile number as {role}.","status":status.HTTP_400_BAD_REQUEST}, status=status.HTTP_400_BAD_REQUEST)
+        
+        user,created = User.objects.get_or_create(
+            mobile_no = request.data.get("mobile_no").strip(),
+            country_code=request.data.get("country_code").strip(),
+            role_id=request.data.get('role_id')
+        )
+        if not user.role_id == int(request.data.get('role_id')) and not created:
+            role="Buyer" if user.role_id == BUYER else "Seller"
+            return Response({"message":f"There is already a registered user with this mobile number as {role}.","status":status.HTTP_400_BAD_REQUEST}, status=status.HTTP_400_BAD_REQUEST)
+        
         if user.status == INACTIVE:
             return Response({"message":"Your account has been inactivated. Please contact admin.","status":status.HTTP_400_BAD_REQUEST}, status=status.HTTP_400_BAD_REQUEST)
         
         elif user.status == DELETED:
             return Response({"message":"Your account has been deleted. Please contact admin.","status":status.HTTP_400_BAD_REQUEST}, status=status.HTTP_400_BAD_REQUEST)
-        
         elif user.status == ACTIVE:
             if user.role_id == ADMIN:
                 return Response({"message":"Invalid Login Credentials.","status":status.HTTP_400_BAD_REQUEST}, status=status.HTTP_400_BAD_REQUEST)
-            if not user.is_verified and (user.role_id == BUYER or user.role_id == SELLER):
-                try:
-                    OTP = GenerateOTP()
-                    user.temp_otp =  OTP
-                    user.save()
-                    if request.data.get('mobile_no'):
-                        to_num = user.country_code + user.mobile_no
-                        SendtextMessage(f"Your OTP to verify your account is {OTP}.", to_num )
-                        message=f"An OTP ({user.temp_otp}) has been sent to your registered mobile number."
-                    if request.data.get('email'):
-                        BulkSendUserEmail(request,user,'EmailTemplates/VerifyOTP.html','Account Verification',request.POST.get("email"),"","",user.temp_otp,"")
-                        message=f"An OTP {user.temp_otp} has been sent on your email to verify your account."
-                except Exception as e:
-                    db_logger.exception(e)
-                data = UserSerializer(user,context = {"request":request}).data
-                return Response({"message":message,"data":data,"status":status.HTTP_200_OK},status=status.HTTP_200_OK)
-            
-            # Device.objects.filter(device_token=request.data['device_token']).delete()
-            # try:
-            #     device = Device.objects.get(user = user)
-            # except Device.DoesNotExist:
-            #     device = Device.objects.create(user = user)
-            # device.device_type = request.data['device_type']
-            # device.device_name = request.data['device_name']
-            # device.device_token = request.data['device_token']
-            # device.save()
             Token.objects.filter(user=user).delete()
-            user.role_id=int(request.data.get('role_id'))
-            user.save()
-            user.refresh_from_db()
-            login(request,user)
-            if request.data.get('email'):
-                CreateLoginHistory(request,request.data.get('email'),None,LOGIN_SUCCESS,None)
-            if request.data.get('mobile_no'):
-                CreateLoginHistory(request,None, request.data.get("mobile_no").strip(),LOGIN_SUCCESS,request.data.get("country_code").strip())
-        data = UserSerializer(user,context = {"request":request}).data
-        return Response({"message":"Logged in successfully","data":data,"status":status.HTTP_200_OK}, status=status.HTTP_200_OK)
+            try:
+                OTP = GenerateOTP()
+                user.temp_otp =  OTP
+                user.save()
+                to_num = f"{user.country_code}{user.mobile_no}"
+                # SendtextMessage(f"Your OTP to verify your mobile number is {OTP}.", to_num )
+            except Exception as e:
+                db_logger.exception(e)
+            if user.temp:
+                message=f"An OTP ({user.temp_otp}) has been sent to your mobile number."
+            else:
+                message=f"An OTP ({user.temp_otp}) has been sent to your registered mobile number."
+            if user.role_id == BUYER:
+                data = UserSerializer(user,context = {"request":request}).data
+            else:
+                data = SellerSerializer(user,context = {"request":request}).data
+            return Response({"message":message,"data":data,"status":status.HTTP_200_OK},status=status.HTTP_200_OK)
 
 
 class UserCheckView(APIView):
@@ -877,18 +831,25 @@ class UpdateProfileDetails(APIView):
     @swagger_auto_schema(
         tags=["Profile Management"],
         operation_id="update_profile_buyer",
-        operation_description="Update Profile ( Buyer )",
+        operation_description="Update Profile",
         manual_parameters=[
             openapi.Parameter('profile_pic', openapi.IN_FORM, type=openapi.TYPE_FILE,description='Profile Pic'),
+            openapi.Parameter('business_name', openapi.IN_FORM, type=openapi.TYPE_STRING,description='Business name'),
             openapi.Parameter('first_name', openapi.IN_FORM, type=openapi.TYPE_STRING,description='first name'),
             openapi.Parameter('last_name', openapi.IN_FORM, type=openapi.TYPE_STRING,description='last name'),
             openapi.Parameter('email', openapi.IN_FORM, type=openapi.TYPE_STRING,description='email'),
             openapi.Parameter('mobile_no', openapi.IN_FORM, type=openapi.TYPE_STRING,description='mobile_no'),
             openapi.Parameter('country_code', openapi.IN_FORM, type=openapi.TYPE_STRING,description='country_code'),
             openapi.Parameter('country_iso_code', openapi.IN_FORM, type=openapi.TYPE_STRING,description='country_iso_code'),
-            openapi.Parameter('gender', openapi.IN_FORM, type=openapi.TYPE_STRING,description='Male:1 Female:2, Other:3 '),
-            openapi.Parameter('dob', openapi.IN_FORM, type=openapi.TYPE_STRING ,description='Format: YYYY-MM-DD'),
+            
+            #GST Document
+            openapi.Parameter('gst_no', openapi.IN_FORM, type=openapi.TYPE_STRING,description='GST Number'),
+            openapi.Parameter('gst_document', openapi.IN_FORM, type=openapi.TYPE_FILE,description='GST Document'),
+
             #Address
+            openapi.Parameter('city', openapi.IN_FORM, type=openapi.TYPE_STRING ,description='City'),
+            openapi.Parameter('state', openapi.IN_FORM, type=openapi.TYPE_STRING ,description='State'),
+            openapi.Parameter('street', openapi.IN_FORM, type=openapi.TYPE_STRING ,description='Street Address'),
             openapi.Parameter('address', openapi.IN_FORM, type=openapi.TYPE_STRING ,description='Address'),
             openapi.Parameter('latitude', openapi.IN_FORM, type=openapi.TYPE_STRING ,description='Latitude'),
             openapi.Parameter('longitude', openapi.IN_FORM, type=openapi.TYPE_STRING ,description='Longitude'),
@@ -928,11 +889,28 @@ class UpdateProfileDetails(APIView):
         if request.FILES.get('profile_pic'):
             user.profile_pic = request.FILES.get('profile_pic')
         
-        if request.data.get('address'):
-            user.address=request.data.get('address')
-            user.latitude= request.data.get('latitude') if request.data.get('latitude') else None
-            user.longitude= request.data.get('longitude') if request.data.get('longitude') else None
+        if request.FILES.get('gst_no'):
+            user.gst_no = request.FILES.get('gst_no')
+        if request.FILES.get('gst_document'):
+            user.gst_document = request.FILES.get('gst_document')
 
+        if user.address:
+            address=user.address
+        else:
+            address=Address.objects.create()
+        if request.data.get('address'):
+            address.address=request.data.get('address')
+        if request.data.get('city'):
+            address.city=request.data.get('city')
+        if request.data.get('state'):
+            address.state=request.data.get('state')
+        if request.data.get('street'):
+            address.street=request.data.get('street')
+        if request.data.get('state'):
+            address.latitude=request.data.get('latitude')
+        if request.data.get('state'):
+            address.longitude=request.data.get('longitude')
+        address.save()
         if request.data.get('first_name') or request.data.get('last_name'):
             user.full_name=" ".join([user.first_name,user.last_name])
         if not user.is_profile_setup:
@@ -941,133 +919,91 @@ class UpdateProfileDetails(APIView):
         else:
             message="Profile updated successfully!"
         user.save()
-        data = UserSerializer(user,context = {"request":request}).data
+        if user.role_id == BUYER:
+            data = UserSerializer(user,context = {"request":request}).data
+        else:
+            data = SellerSerializer(user,context={"request":request}).data
         return Response({"message":message,"data":data,"status":status.HTTP_200_OK}, status=status.HTTP_200_OK)
 
 
-# class UpdateMobileNumberView(APIView):
-#     permission_classes = (permissions.IsAuthenticated,)
-#     parser_classes = [MultiPartParser]
+class UpdateMobileNumberView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    parser_classes = [FormParser]
 
-#     @swagger_auto_schema(
-#         tags=["Profile Management"],
-#         operation_id="change_mobile_number_send_otp",
-#         operation_description="Change Mobile Number Send OTP",
-#         manual_parameters=[            
-#             openapi.Parameter('mobile_no', openapi.IN_FORM, type=openapi.TYPE_STRING ,description='Mobile number'),
-#             openapi.Parameter('country_code', openapi.IN_FORM, type=openapi.TYPE_STRING,description='Country Code'),
-#             openapi.Parameter('country_iso_code', openapi.IN_FORM, type=openapi.TYPE_STRING,description='Country ISO Code'),
+    @swagger_auto_schema(
+        tags=["Profile Management"],
+        operation_id="change_mobile_number_send_otp",
+        operation_description="Change Mobile Number Send OTP",
+        manual_parameters=[            
+            openapi.Parameter('mobile_no', openapi.IN_FORM, type=openapi.TYPE_STRING ,description='Mobile number'),
+            openapi.Parameter('country_code', openapi.IN_FORM, type=openapi.TYPE_STRING,description='Country Code'),
+            openapi.Parameter('country_iso_code', openapi.IN_FORM, type=openapi.TYPE_STRING,description='Country ISO Code'),
 
-#         ]
-#     )
-#     def post(self, request, *args, **kwargs):
-#         ## Validate Required Fields
-#         required_fields = list(filter(None, [
-#             RequiredFieldValidations.validate_field(self,request,'mobile_no',"post","Please enter mobile number"),
-#             RequiredFieldValidations.validate_field(self,request,'country_code',"post","Please enter country code"),
-#             RequiredFieldValidations.validate_field(self,request,'country_iso_code',"post","Please enter country iso code"),
-#         ]))
-#         user=request.user
-#         mob_no= request.data.get('mobile_no') if not request.data.get('mobile_no')[0]=='0' else request.data.get('mobile_no')[1:]
-#         if User.objects.filter(Q(status=ACTIVE)|Q(status=INACTIVE),mobile_no=mob_no).exclude(id=user.id):
-#             return Response({"message":"There is already a registered user with this mobile number.","status":status.HTTP_400_BAD_REQUEST},status=status.HTTP_400_BAD_REQUEST)
+        ]
+    )
+    def post(self, request, *args, **kwargs):
+        ## Validate Required Fields
+        required_fields = list(filter(None, [
+            RequiredFieldValidations.validate_field(self,request,'mobile_no',"post","Please enter mobile number"),
+            RequiredFieldValidations.validate_field(self,request,'country_code',"post","Please enter country code"),
+            RequiredFieldValidations.validate_field(self,request,'country_iso_code',"post","Please enter country iso code"),
+        ]))
+        user=request.user
+        mob_no= request.data.get('mobile_no')
+        if User.objects.filter(Q(status=ACTIVE)|Q(status=INACTIVE),mobile_no=mob_no).exclude(id=user.id):
+            return Response({"message":"There is already a registered user with this mobile number.","status":status.HTTP_400_BAD_REQUEST},status=status.HTTP_400_BAD_REQUEST)
         
 
-#         ## set mobile number on user session and otp
-#         user = request.user
-#         # OTP = GenerateOTP()
+        ## set mobile number on user session and otp
+        user = request.user
+        OTP = GenerateOTP()
 
-#         # TempOtpValidation.objects.filter(mobile_no = request.data.get('mobile_no'),country_code = request.data.get('country_code')).delete()
-#         # mobile_validate = TempOtpValidation.objects.create(
-#         #     mobile_no = request.data.get('mobile_no'),
-#         #     country_code = request.data.get('country_code'),
-#         #     country_iso_code = request.data.get('company_country_iso_code'),
-#         #     temp_otp = OTP
-#         # )
-#         user.mobile_no = mob_no
-#         user.country_code = request.data.get('country_code')
-#         user.country_iso_code = request.data.get('country_iso_code')
-#         user.save()
-#         # message = f"An OTP {OTP} has been sent on registered mobile number to verify account."
-#         data = UserSerializer(user,context = {"request":request}).data
-#         return Response({"message":"Contact number updated successfully!","data":data,"status":status.HTTP_200_OK},status=status.HTTP_200_OK)
+        TempOtpValidation.objects.filter(user=user).delete()
+        mobile_validate = TempOtpValidation.objects.create(
+            mobile_no = request.data.get('mobile_no'),
+            country_code = request.data.get('country_code'),
+            country_iso_code = request.data.get('company_country_iso_code'),
+            temp_otp = OTP,
+            user=user
+        )
+        to_num=f"{mobile_validate.country_code}{mobile_validate.mobile_no}"
+        # SendtextMessage(f"Enter {OTP} on <ProjectName> to verify your account.", to_num )
+        message = f"An OTP {OTP} has been sent to verify new mobile number."
+        return Response({"message":message,"status":status.HTTP_200_OK},status=status.HTTP_200_OK)
 
 
 
 
-# class VerifyMobileNumberView(APIView):
-#     permission_classes = (permissions.IsAuthenticated,)
-#     parser_classes = [MultiPartParser]
+class VerifyMobileNumberView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    parser_classes = [MultiPartParser]
 
-#     @swagger_auto_schema(
-#         tags=["Profile Management"],
-#         operation_id="change_mobile_number_verify_otp",
-#         operation_description="Change Mobile Number Verify OTP",
-#         manual_parameters=[            
-#             openapi.Parameter('mobile_no', openapi.IN_FORM, type=openapi.TYPE_STRING ,description='Mobile number'),
-#             openapi.Parameter('country_code', openapi.IN_FORM, type=openapi.TYPE_STRING,description='Country Code'),
-#             openapi.Parameter('otp', openapi.IN_FORM, type=openapi.TYPE_STRING,description='OTP'),
+    @swagger_auto_schema(
+        tags=["Profile Management"],
+        operation_id="change_mobile_number_verify_otp",
+        operation_description="Change Mobile Number Verify OTP",
+        manual_parameters=[            
+            openapi.Parameter('otp', openapi.IN_FORM, type=openapi.TYPE_STRING,description='OTP'),
 
-#         ]
-#     )
-#     def post(self, request, *args, **kwargs):
-#         ## Validate Required Fields
-#         required_fields = list(filter(None, [
-#             RequiredFieldValidations.validate_field(self,request,'otp',"post","Please enter country OTP"),
-#             RequiredFieldValidations.validate_field(self,request,'mobile_no',"post","Please enter mobile number"),
-#             RequiredFieldValidations.validate_field(self,request,'country_code',"post","Please enter country code"),
-#         ]))
-#         user = request.user
-#         if User.objects.filter(status=ACTIVE,mobile_no=request.data.get('mobile_no')).exclude(id=user.id):
-#             return Response({"message":"There is already a registered user with this mobile number.","status":status.HTTP_400_BAD_REQUEST},status=status.HTTP_400_BAD_REQUEST)
-        
-#         ## verify otp 
-#         mobile_validate = TempOtpValidation.objects.filter(
-#             mobile_no = request.data.get('mobile_no'),
-#             country_code = request.data.get('country_code'),
-#         ).order_by('created_on').last()
-
-#         otp = int(user.temp_otp)
-#         if otp == int(request.data.get('otp')):
-#             user.mobile_no = mobile_validate.mobile_no
-#             user.country_code = mobile_validate.country_code
-#             user.country_iso_code = mobile_validate.country_iso_code
-#             user.temp_otp = None
-#             user.save()
-#             mobile_validate.delete()
-#         else:
-#             return Response({"message":"Incorrect OTP.","status":status.HTTP_400_BAD_REQUEST},status=status.HTTP_400_BAD_REQUEST)
-#         data = UserSerializer(user,context = {"request":request}).data
-#         return Response({"message":"Mobile number updated successfully","data":data,"status":status.HTTP_200_OK},status=status.HTTP_200_OK)
-
-
-# class UpdatEmailAddressView(APIView):
-#     permission_classes = (permissions.IsAuthenticated,)
-#     parser_classes = [MultiPartParser]
-
-#     @swagger_auto_schema(
-#         tags=["Profile Management"],
-#         operation_id="update_email_address",
-#         operation_description="Update Email Address ( Buyer )",
-#         manual_parameters=[
-#             openapi.Parameter('email', openapi.IN_FORM, type=openapi.TYPE_STRING,description='Email Address'),
-            
-#         ],
-#     )
-#     def post(self, request, *args, **kwargs):
-#         ## Validate Required Fields
-#         required_fields = list(filter(None, [
-#             RequiredFieldValidations.validate_field(self,request,'email',"post","Please enter email"),
-#         ]))
-
-        
-#         user = request.user
-#         if User.objects.filter(status=ACTIVE,email=request.data.get('email')).exclude(id=user.id):
-#             return Response({"message":"There is already a registered user with this email.","status":status.HTTP_400_BAD_REQUEST},status=status.HTTP_400_BAD_REQUEST)
-        
-#         if request.data.get('email'):
-#             user.email = request.data.get('email')
-        
-#         user.save()
-#         data = UserSerializer(user,context = {"request":request}).data
-#         return Response({"message":"Email updated successfully","data":data,"status":status.HTTP_200_OK}, status=status.HTTP_200_OK)
+        ]
+    )
+    def post(self, request, *args, **kwargs):
+        ## Validate Required Fields
+        required_fields = list(filter(None, [
+            RequiredFieldValidations.validate_field(self,request,'otp',"post","Please enter country OTP"),
+        ]))
+        user = request.user
+        try:
+            mobile_validate=TempOtpValidation.objects.get(user=user)
+        except:
+            return Response({"message":"No update mobile number request found!","status":status.HTTP_400_BAD_REQUEST},status=status.HTTP_400_BAD_REQUEST)
+        if mobile_validate.temp_otp == request.data.get('otp'):
+            user.mobile_no = mobile_validate.mobile_no
+            user.country_code = mobile_validate.country_code
+            user.country_iso_code = mobile_validate.country_iso_code
+            user.save()
+            mobile_validate.delete()
+        else:
+            return Response({"message":"Incorrect OTP.","status":status.HTTP_400_BAD_REQUEST},status=status.HTTP_400_BAD_REQUEST)
+        data = UserSerializer(user,context = {"request":request}).data
+        return Response({"message":"Mobile number updated successfully","data":data,"status":status.HTTP_200_OK},status=status.HTTP_200_OK)

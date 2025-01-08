@@ -32,12 +32,20 @@ RSVP = 3
 DONATION = 4
 
 """
-Event Status 
+Product Status 
 """
-EVENT_STATUS = ((1, "Active"),(2,"Inactive"),(3,"Deleted"))
-ACTIVE = 1
-INACTIVE = 2
-DELETED = 3
+PRODUCT_STATUS = ((1, "Active"),(2,"Inactive"),(3,"Deleted"))
+ACTIVE_PRODUCT = 1
+INACTIVE_PRODUCT = 2
+DELETED_PRODUCT = 3
+
+"""
+Order Status 
+"""
+ORDER_STATUS = ((1, "Pending"),(2,"Accepted"),(3,"Completed"))
+PENDING_ORDER = 1
+ACCEPTED_ORDER = 2
+COMPLETED_ORDER = 3
 
 """
 Blog Status 

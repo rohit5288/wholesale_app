@@ -113,16 +113,6 @@
                                         <h6>{% if user.email %}<b>{{user.email}}</b>{% else %} -- {% endif %}</h6>
                                     </li>
                                     <li>
-                                        <h4>Verification Status</h4>
-                                        <h6>
-                                            {% if user.is_verified %}
-                                            <span class="badge bg-success">Verified</span>
-                                            {% else %}
-                                            <span class="badge bg-danger">Unverified</span>
-                                            {% endif%}                 
-                                        </h6>
-                                    </li>
-                                    <li>
                                         <h4>Created On </h4>
                                         <h6>
                                             <script>
@@ -145,7 +135,7 @@
                                     <li>
                                         <h4>Access Token </h4>
                                         <h6>
-                                            {% if token and token.key %}{{token.key}}{% else %}-{% endif %}
+                                            {% if token and token.key %}Token {{token.key}}{% else %}-{% endif %}
                                         </h6>
                                     </li> 
                                     <li>

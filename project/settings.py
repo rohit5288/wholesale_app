@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'contact_us',
     'credentials',
     'sellers',
+    'products',
     'chat',
 ]
 

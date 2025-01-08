@@ -12,7 +12,7 @@ app_name = 'api'
 
 urlpatterns = [
     ## Authentication
-    re_path(r'^user-signup-api/$',UserSignupView.as_view(),name="user_signup_api"),
+    # re_path(r'^user-signup-api/$',UserSignupView.as_view(),name="user_signup_api"),
     re_path(r'^user-login-api/$',UserLoginView.as_view(),name="user_login_api"),
     re_path(r'^check-user-api/$', UserCheckView.as_view(), name='check_user_api'),
     re_path(r'^delete-account-api/$',DeleteAccount.as_view(),name="delete_account_api"),
@@ -34,9 +34,8 @@ urlpatterns = [
     ## Profile Management
     re_path(r'^profile-details-api/$',UserProfileDetails.as_view(),name="user_profile_details_api"),
     re_path(r'^update-profile-api/$',UpdateProfileDetails.as_view(),name="update_profile_api"),
-    # re_path(r'^update-mobile-number-api/$',UpdateMobileNumberView.as_view(),name="update_mobile_number_api"),
-    # re_path(r'^verify-mobile-number-api/$',VerifyMobileNumberView.as_view(),name="verify_mobile_number_api"),
-    # re_path(r'^update-email-api/$',UpdatEmailAddressView.as_view(),name="update_email_api"),
+    re_path(r'^update-mobile-number-api/$',UpdateMobileNumberView.as_view(),name="update_mobile_number_api"),
+    re_path(r'^verify-mobile-number-api/$',VerifyMobileNumberView.as_view(),name="verify_mobile_number_api"),
 
     ## Static Pages
     re_path(r'^static-pages-api/$',StaticPages.as_view(),name="static_pages_api"),

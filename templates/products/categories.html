@@ -1,0 +1,285 @@
+{% load static %}{% load extras %}
+{% include 'admin-includes/header.html' %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Categories</h4>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a class="white-text" href="/">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a class="white-text" href="{% url 'products:category_list' %}">Categories</a>
+                    </ol>
+                </nav>
+            </div>
+
+            <div class="page-btn d-flex flex-wrap">
+                <a data-bs-toggle="modal" data-bs-target="#category-data-modal" class="btn btn-info sharp me-2"><i class="fa fa-upload me-2 "></i>Import</a>
+                {% comment %} {% if categories %}
+                <form action="{% url 'products:export_categories_data' %}" method="POST">
+					{% csrf_token %} 			
+					<input type ="hidden" class ="timezone" name ="timezone">
+					<div><button type="submit" class="btn btn-info sharp me-2"><i class="fas fa-download me-2"></i>Export Csv</button></div>
+				</form> 
+                {% endif %} {% endcomment %}
+
+                {% comment %} <form action="{% url 'products:export_categories_data' %}" method="POST">
+					{% csrf_token %} 			
+					<input type ="hidden" class ="timezone" name ="timezone">
+					<div><button type="submit" class="btn btn-info sharp me-2"><i class="fas fa-download me-2"></i>Export Excel</button></div>
+				</form>  {% endcomment %}
+
+                <a data-bs-toggle="modal" data-bs-target="#category-modal" class="btn btn-primary sharp me-2"><i class="fa fa-plus me-2"></i>Add Category</a>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="dataview">
+                    <form onsubmit="Loader()" action="{% url 'products:category_list' %}" method="GET">
+                        <div class="table-responsive ">
+                            <table class="table datatable">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Description</th>
+                                        <th>Created on</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <thead>
+                                    <tr class="search-row">
+                                        <td><input type="text" value="{{title}}" class="form-control" name="title" maxlength="20"></td>
+                                        <td><input type="text" value="{{description}}" class="form-control" name="description" maxlength="20"></td>
+                                        <td><input type="date" onkeydown="return false" value="{{created_on}}" class="position-relative form-control" onchange="this.form.submit()" name="created_on"></td>
+                                        <td><button type="submit" class="btn btn-primary">Search</button></td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if categories %}
+                                    {% for data in categories %}
+                                    <tr>                
+                                        <td class='clickable-row' data-href="{% url 'products:view_category' data.id %}">
+                                            {% if data.title %} {{data.title}}{% else %}-{% endif %}
+                                        </td>
+                                        <td class='clickable-row' data-href="{% url 'products:view_category' data.id %}">
+                                            {% if data.description %} {{data.description}}{% else %}-{% endif %}
+                                        </td>
+                                        <td class='clickable-row' data-href="{% url 'products:view_category' data.id %}">
+                                            <script>
+                                                var d = ConvertDateTime("{{ data.created_on|date:'Y-m-d' }}", "{{ data.created_on|time:'H:i' }}");
+                                                document.write(d);
+                                            </script>
+                                        </td>
+                                        
+                                        <td style='cursor:no-drop' >
+                                            <div class="d-flex gap-1">
+                                            {% comment %} <a title="View Category" href="{% url 'products:view_category' data.id %}" class="btn btn-success shadow btn-xs sharp" ><i class="fa fa-eye"></i></a> {% endcomment %}
+                                            <a title="Edit Category" data-bs-toggle="modal" onclick="GetCategoryId(`{{data.id}}`,`{{data.title}}`)" data-bs-target="#update-modal" class="btn btn-warning sharp"><i class="fa fa-edit"></i></i> </a>
+											<a title="Delete Category" href="{% url 'products:delete_category' data.id %}" message="Are you sure you want to delete this category?" class="btn btn-danger shadow btn-xs sharp action_confirm" ><i class="fa fa-trash"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </form>
+                    {% if categories.has_other_pages %}
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                            {% if categories.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?{% url_replace request 'page' categories.previous_page_number %}">&laquo;</a>                                          
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">&laquo;</span>
+                                </li>
+                            {% endif %}
+                            {% for i in categories.paginator.page_range %}
+                                {% if categories.number == i %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ i }} <span class="sr-only">(current)</span></span>
+                                    </li>
+                                {% elif i > categories.number|add:'-5' and i < categories.number|add:'5' %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?{% url_replace request 'page' i %}">{{ i }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            {% if categories.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?{% url_replace request 'page' categories.next_page_number %}">&raquo;</a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">&raquo;</span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="category-modal" data-bs-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Add Category</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="location.reload()" ></button>
+            </div>
+            <div class="modal-body">
+                <div class="basic-form">
+
+                    <form id="add-category" action="{% url 'products:category_list' %}" enctype="multipart/form-data" onsubmit="Loader(this.id)" method="POST">
+                        {% csrf_token %}
+                        <div class="form-group mb-3">
+                            <div>
+                                <div class="my-1 required-field">
+                                    <div class="form-group required-field">
+                                        <label class="form-label">Title</label>
+                                        <input type="text" placeholder="Enter Title" name="title" class="form-control" maxlength="60">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="btn-box text-end mt-2">
+                                <button class="btn btn-primary btn-fill me-1">Save</button>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="category-data-modal" data-bs-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Upload Categories Data</h4>
+                <button type="button" class="bg-danger btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="location.reload()" ></button>
+            </div>
+            <div class="modal-body">
+                <div class="basic-form">
+                    
+                    <form id="import-categories" action="{% url 'products:import_categories_data' %}" enctype="multipart/form-data" onsubmit="Loader(this.id)" method="POST">
+                        {% csrf_token %}
+                        <div class="form-group mb-3">
+                            <div>
+                                <div class="my-1 required-field">
+                                    <div class="form-group required-field">
+                                        <label class="form-label">Data File</label>
+                                        <input type="file" name="file" class="form-control" maxlength="60">
+                                        <p>To download sample data file <a class="btn-link" href="{% static 'admin-assets/sample_file/sample_categories.csv' %}">Click here!</a> </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="btn-box text-end mt-2">
+                                <button class="btn btn-primary btn-fill me-1">Save</button>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="update-modal" data-bs-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Update Category</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="location.reload()" ></button>
+            </div>
+            <div class="modal-body">
+                <div class="basic-form">
+                    <form id="update-category" action="{% url 'products:update_category' %}" onsubmit="Loader(this.id)" enctype="multipart/form-data" method="POST">
+                        {% csrf_token %}
+                        <div class="form-group mb-3">
+                            <div>
+                                <div class="my-1 required-field">
+                                    <div class="form-group required-field">
+                                        <label class="form-label">Title</label>
+                                        <input type="text" placeholder="Enter Title" id='e_title' name="e_title" class="form-control" maxlength="60">
+                                    </div>
+                                </div>
+
+                                <input type='hidden' name='category_id' id='category_id'>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="btn-box text-end mt-2">
+                                <button class="btn btn-primary btn-fill me-1">Save</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% include 'admin-includes/footer.html' %}
+<script type="text/javascript">
+$("#import-categories").validate({
+        ignore:[],
+        rules: {
+            file: {
+                required: true,
+                accept:'csv',
+            },
+        },
+        messages: {
+            file: {
+                required: "Please choose file",
+                accept:"Only CSV files are allowed."
+            },
+        },
+    }); 
+$("#add-category").validate({
+        ignore:[],
+        rules: {
+            title: {
+                required: true,
+                normalizer: function (value) {
+                    return $.trim(value);
+                }
+            },
+        },
+        messages: {
+            title: {
+                required: "Please enter title",
+            },
+        },
+    }); 
+$("#update-category").validate({
+        ignore:[],
+        rules: {
+            e_title: {
+                required: true,
+                normalizer: function (value) {
+                    return $.trim(value);
+                }
+            },
+        },
+        messages: {
+            e_title: {
+                required: "Please enter title",
+            },
+        },
+    });    
+
+function GetCategoryId(id,title){
+    $('#category_id').val(id)
+    $('#e_title').val(title)
+}
+</script>

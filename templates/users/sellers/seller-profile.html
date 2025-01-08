@@ -113,17 +113,23 @@
                                         <h6>{% if user.email %}<b>{{user.email}}</b>{% else %} -- {% endif %}</h6>
                                     </li>
                                     <li>
-                                        <h4>Verification Status</h4>
+                                        <h4>GST Number</h4>
+                                        <h6>{% if user.gst_no %}<b>{{user.gst_no}}</b>{% else %} -- {% endif %}</h6>
+                                    </li>
+                                    <li>
+                                        <h4>GST Document</h4>
                                         <h6>
-                                            {% if user.is_verified %}
-                                            <span class="badge bg-success">Verified</span>
-                                            {% else %}
-                                            <span class="badge bg-danger">Unverified</span>
-                                            {% endif%}                 
+                                            {% if user.gst_document %}
+                                                <a class="product-img " href="{{user.gst_document.url}}" data-fancybox="gallery" data-caption="">
+                                                    <img style="height: 40px; width:40px" class="me-2" src="{{user.gst_document.url}}" alt="space">
+                                                </a>
+                                            {% else %} 
+                                                -- 
+                                            {% endif %}
                                         </h6>
                                     </li>
                                     <li>
-                                        <h4>Created On </h4>
+                                        <h4>Created On</h4>
                                         <h6>
                                             <script>
                                                 var date = ConvertDateTime("{{ user.created_on|date:'Y-m-d' }}", "{{ user.created_on|time:'H:i' }}");
@@ -145,7 +151,7 @@
                                     <li>
                                         <h4>Access Token </h4>
                                         <h6>
-                                            {% if token and token.key %}{{token.key}}{% else %}-{% endif %}
+                                            {% if token and token.key %}Token {{token.key}}{% else %}-{% endif %}
                                         </h6>
                                     </li> 
                                     <li>
