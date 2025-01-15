@@ -29,7 +29,7 @@ services:
     build:
       context: ./app
     ports:
-      - "8000:8000"
+      - "80:8000"
     depends_on:
       - mysql 
     restart: unless-stopped
@@ -57,6 +57,6 @@ services:
     depends_on:
       - django
     ports:
-      - '80:80'
+      - '83:80'
       # - '443:443'
     restart: unless-stopped 
