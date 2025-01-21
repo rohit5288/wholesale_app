@@ -20,18 +20,11 @@ from django.core.mail.backends.smtp import EmailBackend
 from rest_framework.authtoken.models import Token 
 import json
 import csv
-import stripe
-import qrcode
 import os
 from django.core.mail import get_connection
 from credentials.models import *
 from sellers.models import *
-from twilio.rest import Client
 from typing import List
-from PIL import Image
-from qrcode.image.styledpil import StyledPilImage
-from qrcode.image.styles.moduledrawers.pil import CircleModuleDrawer,VerticalBarsDrawer,GappedSquareModuleDrawer,SquareModuleDrawer
-from qrcode.image.styles.colormasks import HorizontalGradiantColorMask
 
 
 db_logger = logging.getLogger('db')
@@ -322,79 +315,11 @@ def GeneratePromoCode():
          db_logger.exception(e)
          return None
 
-
-def GenerateQRCode(ticket):
-    try:
-        Logo_link = './static/admin-assets/images/logo.jpg'
-        logo = Image.open(Logo_link)
-        basewidth = 50
-        wpercent = (basewidth/float(logo.size[0]))
-        hsize = int((float(logo.size[1])*float(wpercent)))
-        logo = logo.resize((basewidth, hsize), Image.Resampling.LANCZOS)
-        qr = qrcode.QRCode(
-            version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_H,
-            # error_correction=qrcode.constants.ERROR_CORRECT_L,
-            box_size=5,
-            border=4,
-        )
-        ticket_id = str(ticket.ticket_id)
-        qr.add_data(ticket_id)
-        qr.make(fit=True)
-        img = qr.make_image(
-            image_factory=StyledPilImage,
-            module_drawer=SquareModuleDrawer(),
-            color_mask=HorizontalGradiantColorMask(left_color=(30, 132, 91),right_color=(221, 153, 51)),
-        ).convert('RGB')
-        pos = ((img.size[0] - logo.size[0]) // 2,
-            (img.size[1] - logo.size[1]) // 2)
-        img.paste(logo, pos)
-        path = settings.BASE_DIR
-        if not os.path.exists(f"{path}/media/qr_code/"):
-            os.makedirs(f"{path}/media/qr_code/")
-        img.save(f"{path}/media/qr_code/" + ticket_id + '.png')
-        ticket.qr_code = f"qr_code/{ticket_id}.png"
-        ticket.save()
-        return True
-    except Exception as e:
-        db_logger.exception(e)
-        booking=ticket.booking.first()
-        if booking:
-             booking.no_of_tickets -=1
-             booking.save()
-        ticket.delete()
-        return False  
-
-    tickets=[]
-    for i in range(booking.no_of_tickets):
-        ticket_id=GenerateTicketID()
-        ticket=Tickets.objects.create(
-            user=request.user,
-            inventory=booking.inventory,
-            is_paid = True,
-            ticket_id = ticket_id if ticket_id else "",
-        )
-        GenerateQRCode(ticket)
-        tickets.append(ticket)
-    return tickets
-
-
 def GetWeekDates():
     today_date = date.today()
     weekday = today_date.isoweekday()
     start = today_date - timedelta(days=weekday)
     return [start + timedelta(days=d) for d in range(7)]
-
-def GetStripeKey():
-    try:
-        api_key = StripeSetting.objects.get(is_active=True)
-    except:
-        try:
-            api_key,created = StripeSetting.objects.get_or_create(test_secretkey=env('STRIPE_TEST_KEY'),test_publishkey=env('STRIPE_PUBLISH_KEY'),is_active=True,created_by__role_id=1)
-        except:
-            api_key=None
-    return api_key.test_secretkey if api_key else None
-
 
 def CreateUserActivityLog(title:str,description:str,user:User,activity_type:int,object_id:str):
      try:

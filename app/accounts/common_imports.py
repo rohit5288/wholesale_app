@@ -28,7 +28,6 @@ from rest_framework import status,permissions
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework.parsers import MultiPartParser,FormParser
-import stripe
 
 env = environ.Env()
 environ.Env.read_env()

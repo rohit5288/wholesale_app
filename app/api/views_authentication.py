@@ -10,8 +10,6 @@ from api.helper import *
 from threading import Thread
 import re
 
-stripe.api_key=GetStripeKey()
-
 """
 Authentication Management
 """
