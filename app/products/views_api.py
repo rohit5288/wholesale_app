@@ -4,8 +4,7 @@ from accounts.models import *
 from products.models import *
 from .serializer import *
 
-#Anuj's mobile wifi ip 192.168.136.94
-#Rohit's iphone mobile wifi ip 172.20.10.2
+
 
 class CategoriesListingAPI(APIView):
     """
@@ -29,6 +28,31 @@ class CategoriesListingAPI(APIView):
             categories=categories.filter(title__icontains=request.query_params.get('search'))
         start,end,meta_data= GetPagesData(request.query_params.get('page') if request.query_params.get('page') else None,categories)
         data=CategoriesSerializer(categories[start:end],many=True,context={"request":request}).data
+        return Response({"data":data,"meta_data":meta_data,"status":status.HTTP_200_OK},status=status.HTTP_200_OK)
+
+
+class ProductsListAPI(APIView):
+    """
+    Product Listing API
+    """
+    permission_classes = (permissions.IsAuthenticated,)
+    parser_classes = [MultiPartParser]
+
+    @swagger_auto_schema(
+        tags=["Products Management (Seller)"],
+        operation_id="product_list",
+        operation_description="Product List",
+        manual_parameters=[
+            openapi.Parameter('page', openapi.IN_QUERY, type=openapi.TYPE_NUMBER , description='page'),
+            openapi.Parameter('search', openapi.IN_QUERY, type=openapi.TYPE_STRING , description='search'),
+        ]
+    )
+    def get(self, request, *args, **kwargs):
+        products=Products.objects.all().order_by('title')
+        if request.query_params.get('search'):
+            products=products.filter(title__icontains=request.query_params.get('search'))
+        start,end,meta_data= GetPagesData(request.query_params.get('page') if request.query_params.get('page') else None,products)
+        data=ProductListingSerializer(products[start:end],many=True,context={"request":request}).data
         return Response({"data":data,"meta_data":meta_data,"status":status.HTTP_200_OK},status=status.HTTP_200_OK)
 
 
@@ -162,3 +186,26 @@ class UpdateProductAPI(APIView):
         data=ProductDetailSerializer(product,context={"request":request}).data
         return Response({"message":f"Product added successfully!","data":data,"status":status.HTTP_200_OK},status=status.HTTP_200_OK)
 
+
+class ProductDetailsAPI(APIView):
+    """
+        Product Details API
+    """
+    permission_classes = (permissions.IsAuthenticated,)
+    parser_classes = [MultiPartParser]
+
+    @swagger_auto_schema(
+        tags=["Products Management (Seller)"],
+        operation_id="product_details",
+        operation_description="Product Details",
+        manual_parameters=[
+            openapi.Parameter('id', openapi.IN_FORM, type=openapi.TYPE_STRING , description='Product ID'),
+        ]
+    )
+    def post(self, request, *args, **kwargs):
+        try:
+            product=Products.objects.get(id=request.data.get('id'))
+        except:
+            return Response({"message":"Product does not exists!","status":status.HTTP_400_BAD_REQUEST},status=status.HTTP_400_BAD_REQUEST)
+        data=ProductDetailSerializer(product,context={"request":request}).data
+        return Response({"data":data,"status":status.HTTP_200_OK},status=status.HTTP_200_OK)

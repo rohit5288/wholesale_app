@@ -59,6 +59,7 @@ class ViewUser(View):
             activities=Activities.objects.filter(user=user).count()
             return render(request, 'users/sellers/seller-profile.html', {
                 "user":user,
+                "address":user.address,
                 "activity":activity,
                 "head_title":"Seller Profile",
                 "isBuyer":True,

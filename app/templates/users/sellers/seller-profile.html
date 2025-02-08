@@ -57,6 +57,10 @@
                                         <h6>{% if user.full_name %}{{user.full_name}}{% else %} -- {% endif %}</h6>
                                     </li>
                                     <li>
+                                        <h4>Business Name </h4>
+                                        <h6>{% if user.business_name %}{{user.business_name}}{% else %} -- {% endif %}</h6>
+                                    </li>
+                                    <li>
                                         <h4>Role</h4>
                                         <h6>
                                             {% if user.role_id == 1 %}
@@ -203,7 +207,7 @@
                                         <h4>Address</h4>
                                         <h6>
                                             {% if address.address %}
-                                                {{address.address}}
+                                                {{address.street}}, {{address.city}}, {{address.state}}
                                             {% else %}-{% endif%}                                    
                                         </h6>
                                     </li> 

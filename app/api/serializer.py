@@ -5,6 +5,11 @@ from contact_us.models import *
 from django.db.models import Q
 from api.helper import *
 
+class AddressSerializer(ModelSerializer):
+    class Meta:
+        model=Address
+        fields="__all__"
+
 
 class UserSerializer(ModelSerializer):
     token = SerializerMethodField(read_only=True)
@@ -35,7 +40,7 @@ class UserSerializer(ModelSerializer):
 class SellerSerializer(ModelSerializer):
     token = SerializerMethodField(read_only=True)
     profile_pic=SerializerMethodField()
-    
+    address=AddressSerializer()
     def get_profile_pic(self,obj):
         url=self.context.get('request').build_absolute_uri(obj.profile_pic.url) if obj.profile_pic else "" 
         if url:

@@ -23,11 +23,11 @@ urlpatterns = [
     ## Product Management Admin Panel
     re_path(r'^products-list/$',ProductsList.as_view(),name="products_list"),
     re_path(r'^view-product/(?P<id>[-\w]+)/$',ViewProduct.as_view(),name="view_product"),
-    # re_path(r'^add-product/$',AddProduct.as_view(),name="add_product"),
 
     ##Product Management APIs
-    re_path(r'^list-categories/$',CategoriesListingAPI.as_view(),name="list_categories_api"),
-    re_path(r'^add-product/$',AddProductAPI.as_view(),name="add_product_api"),
-    re_path(r'^update-product/$',UpdateProductAPI.as_view(),name="update_product_api"),
-
+    re_path(r'^list-categories-api/$',CategoriesListingAPI.as_view(),name="list_categories_api"),
+    re_path(r'^add-product-api/$',AddProductAPI.as_view(),name="add_product_api"),
+    re_path(r'^list-products-api/$',ProductsListAPI.as_view(),name="add_product_api"),
+    re_path(r'^update-product-api/$',UpdateProductAPI.as_view(),name="update_product_api"),
+    re_path(r'^product-detail-api/$',ProductDetailsAPI.as_view(),name="product_detail_api"),
 ]

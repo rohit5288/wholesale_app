@@ -123,7 +123,7 @@ Verify Otp
 '''
 class VerifyOTP(APIView):
     permission_classes = (permissions.IsAuthenticated,)
-    parser_classes = [FormParser]
+    parser_classes = [MultiPartParser]
 
     @swagger_auto_schema(
         tags=["Authentication API's"],
@@ -180,7 +180,7 @@ Resend Otp
 '''
 class ResendOTP(APIView):
     permission_classes = (permissions.IsAuthenticated,)
-    parser_classes = [FormParser]
+    parser_classes = [MultiPartParser]
 
     @swagger_auto_schema(
         tags=["Authentication API's"],
@@ -210,7 +210,7 @@ Check User Email
 """
 class CheckUserEmail(APIView):
     permission_classes = (permissions.AllowAny,)
-    parser_classes = [FormParser]
+    parser_classes = [MultiPartParser]
 
     @swagger_auto_schema(
         tags=["Authentication API's"],
@@ -235,7 +235,7 @@ class CheckUserEmail(APIView):
 
 class UserLoginView(APIView):
     permission_classes = (permissions.AllowAny,)
-    parser_classes = [FormParser]
+    parser_classes = [MultiPartParser]
 
     @swagger_auto_schema(
         tags=["Authentication API's"],
@@ -858,6 +858,8 @@ class UpdateProfileDetails(APIView):
             user=User.objects.get(id=request.user.id)
         except:
             return Response({"message":"User not Found!","status":status.HTTP_400_BAD_REQUEST},status=status.HTTP_400_BAD_REQUEST)
+        if request.data.get('business_name'):
+            user.business_name = request.data.get('business_name')
         if request.data.get('first_name'):
             user.first_name = request.data.get('first_name')
         if request.data.get('last_name'):
@@ -909,6 +911,7 @@ class UpdateProfileDetails(APIView):
         if request.data.get('state'):
             address.longitude=request.data.get('longitude')
         address.save()
+        user.address=address
         if request.data.get('first_name') or request.data.get('last_name'):
             user.full_name=" ".join([user.first_name,user.last_name])
         if not user.is_profile_setup:
@@ -926,7 +929,7 @@ class UpdateProfileDetails(APIView):
 
 class UpdateMobileNumberView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
-    parser_classes = [FormParser]
+    parser_classes = [MultiPartParser]
 
     @swagger_auto_schema(
         tags=["Profile Management"],

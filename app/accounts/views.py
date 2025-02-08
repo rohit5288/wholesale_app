@@ -96,7 +96,7 @@ def Validations(request):
             if request.GET.get('email'):
                 data['email'] = User.objects.filter(Q(status=ACTIVE)|Q(status=INACTIVE)|Q(status=DELETED),email=request.GET.get('email')).exclude(id=user.id).exists()
             if request.GET.get('username'):
-                data['username'] = User.objects.filter(Q(status=ACTIVE)|Q(status=INACTIVE|Q(status=DELETED)),username=request.GET.get('username')).exclude(id=user.id).exists()
+                data['username'] = User.objects.filter(Q(status=ACTIVE)|Q(status=INACTIVE)|Q(status=DELETED),username=request.GET.get('username')).exclude(id=user.id).exists()
             if request.GET.get('mobile_no') :
                 data['mobile_no'] = User.objects.filter(Q(status=ACTIVE)|Q(status=INACTIVE)|Q(status=DELETED),mobile_no=request.GET.get('mobile_no')).exclude(id=user.id).exists()
         else:
