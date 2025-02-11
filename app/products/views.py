@@ -19,14 +19,15 @@ class CategoriesListing(View):
             "created_on":request.GET.get('created_on',""),
         })
     def post(self,request,*args,**kwargs):
-        title = request.POST.get('title')        
         # Check if the title already exists
-        category, created = ProductCategory.objects.get_or_create(
-            title=title,
+        category,_ = ProductCategory.objects.get_or_create(
+            title=request.POST.get('title').strip(),
         )
-        if not created:
+        if not _:
             messages.error(request,"Category already exists!")
             return redirect('products:category_list')
+        category.image=request.FILES.get('image')
+        category.save()
         messages.success(request, 'Category Created Successfully!')
         return redirect('products:category_list')
 
@@ -77,13 +78,13 @@ class ViewCategory(View):
 class UpdateCategory(View):
     @method_decorator(admin_only)
     def post(self,request,*args,**kwargs):
-        title = request.POST.get('e_title')
         category=ProductCategory.objects.get(id=request.POST.get('category_id'))
         # Check if the title already exists
-        if ProductCategory.objects.filter(title=title).exclude(id=category.id):
+        if ProductCategory.objects.filter(title=request.POST.get('e_title').strip()).exclude(id=category.id):
             messages.error(request,"Category already exists!")
             return redirect('products:category_list')
-        category.title=title
+        category.title=request.POST.get('e_title').strip()
+        category.image=request.FILES.get('e_image')
         category.save()
         messages.success(request, 'Category Updated Successfully!')
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -129,16 +130,6 @@ class ViewProduct(View):
         return render(request,"products/view-product.html",{
             "head_title":"Products Management",
             "product":product,
+            "address":product.created_by.address,
         })
 
-
-class AddProduct(View):
-    @method_decorator(admin_only)
-    def get(self,request,*args,**kwargs):
-        return render(request,"products/add-product.html",{
-            "head_title":"Products Management",
-        })
-    def post(self,request,*args,**kwargs):
-
-
-        return redirect('products:products_list')

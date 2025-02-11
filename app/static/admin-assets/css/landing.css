@@ -54,7 +54,7 @@ body, html {
   }
   
   .navbar a {
-    color: inherit; /* Use inherit to ensure color change on scroll */
+    color: #fff !important; /* Use inherit to ensure color change on scroll */
     text-decoration: none;
     font-weight: 600;
     margin: 0 15px;

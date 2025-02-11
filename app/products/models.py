@@ -10,6 +10,7 @@ class ProductColors(CommonInfo):
 
 class ProductCategory(CommonInfo):
     title=models.CharField(max_length=255,null=True,blank=True)
+    image=models.FileField(upload_to="category_images/",null=True,blank=True)
     
     class Meta:
         db_table="product_category"

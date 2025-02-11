@@ -89,11 +89,11 @@
                                 </li>
                                 <li>
                                     <h4>City</h4>
-                                    <h6><b>{% if product.city %}{{product.city}}{% else %}-{% endif %}</b></h6>
+                                    <h6><b>{% if address.city %}{{address.city}}{% else %}-{% endif %}</b></h6>
                                 </li>
                                 <li>
                                     <h4>Venue</h4>
-                                    <h6><b>{% if product.address %}{{product.address}}{% if product.latitude and product.longitude %} ({{product.latitude}},{{product.longitude}}){% endif %} {% else %}-{% endif %}</b></h6>
+                                    <h6><b>{% if address.address %}{{address.address}}, {{address.street}}{% if address.latitude and address.longitude %} ({{address.latitude}},{{address.longitude}}){% endif %} {% else %}-{% endif %}</b></h6>
                                 </li>
                                 <li>
                                     <h4>Status</h4>
@@ -105,6 +105,14 @@
                                         {% elif product.status == 3 %}
                                             <span class="badge bg-danger">Deleted</span>
                                         {% endif %}
+                                    </h6>
+                                </li>
+                                <li>
+                                    <h4>Colors</h4>
+                                    <h6>
+                                        {% for color in product.color.all %}
+                                            <input disabled type="color" name="product-color" class="form-control" value="#{{color.color_code}}">
+                                        {% endfor %}
                                     </h6>
                                 </li>
                                 <li>
@@ -138,13 +146,13 @@
                     </div>
                 </div>
             </div>
-            {% if product.address and product.latitude and product.longitude %}
+            {% if address and address.latitude and address.longitude %}
                 <!-- map -->
                 <div class="col-xl-4 col-md-12 mt-4">
                     <div class="card h-100">
                         <div class="card-body">
                            <!-- <div id="map-canvas" style=""></div> -->
-                           <iframe class="w-100" src="//maps.google.com/maps?q={{product.latitude}},{{product.longitude}}&amp;z=15&amp;output=embed" id="map-canvas"></iframe>
+                           <iframe class="w-100" src="//maps.google.com/maps?q={{address.latitude}},{{address.longitude}}&amp;z=15&amp;output=embed" id="map-canvas"></iframe>
                         </div>
                     </div>
                 </div>

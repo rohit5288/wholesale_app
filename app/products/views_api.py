@@ -48,7 +48,7 @@ class ProductsListAPI(APIView):
         ]
     )
     def get(self, request, *args, **kwargs):
-        products=Products.objects.all().order_by('title')
+        products=Products.objects.filter(created_by=request.user).order_by('title')
         if request.query_params.get('search'):
             products=products.filter(title__icontains=request.query_params.get('search'))
         start,end,meta_data= GetPagesData(request.query_params.get('page') if request.query_params.get('page') else None,products)
@@ -74,7 +74,7 @@ class AddProductAPI(APIView):
             openapi.Parameter('fabric_type', openapi.IN_FORM, type=openapi.TYPE_STRING , description='Fabric Type'),
             openapi.Parameter('delivery_timeline', openapi.IN_FORM, type=openapi.TYPE_STRING , description='Fabric Type'),
             openapi.Parameter('size', openapi.IN_FORM, type=openapi.TYPE_STRING , description='Size'),
-            openapi.Parameter('color', openapi.IN_FORM, type=openapi.TYPE_STRING , description='Color'),
+            openapi.Parameter('color', openapi.IN_FORM, type=openapi.TYPE_ARRAY,items=openapi.Items(type=openapi.TYPE_STRING), description='Color Array'),
             openapi.Parameter('cost', openapi.IN_FORM, type=openapi.TYPE_STRING , description='Cost'),
             
             openapi.Parameter('images', openapi.IN_FORM, type=openapi.TYPE_ARRAY,items=openapi.Items(type=openapi.TYPE_FILE), description='Product Images'),
@@ -99,7 +99,6 @@ class AddProductAPI(APIView):
             category=ProductCategory.objects.get(id=request.data.get('category_id'))
         except:
             return Response({"message":"Category does not exists!","status":status.HTTP_400_BAD_REQUEST},status=status.HTTP_400_BAD_REQUEST)
-
         product=Products.objects.create(
             title=request.data.get('title'),
             description=request.data.get('description'),
@@ -107,12 +106,12 @@ class AddProductAPI(APIView):
             fabric_type=request.data.get('fabric_type'),
             delivery_timeline=request.data.get('delivery_timeline'),
             size=request.data.get('size'),
-            cost=request.data.get('cost'),
+            cost=float(request.data.get('cost')),
             created_by=request.user
         )
         for color_code in request.data.getlist('color'):
             product.color.add(ProductColors.objects.get_or_create(color_code=color_code)[0])
-        for image in request.data.getlist('images'):
+        for image in request.FILES.getlist('images'):
             product.images.add(Images.objects.create(image=image))
         product.save()
         product.refresh_from_db()
@@ -139,13 +138,15 @@ class UpdateProductAPI(APIView):
             openapi.Parameter('fabric_type', openapi.IN_FORM, type=openapi.TYPE_STRING , description='Fabric Type'),
             openapi.Parameter('delivery_timeline', openapi.IN_FORM, type=openapi.TYPE_STRING , description='Fabric Type'),
             openapi.Parameter('size', openapi.IN_FORM, type=openapi.TYPE_STRING , description='Size'),
-            openapi.Parameter('color', openapi.IN_FORM, type=openapi.TYPE_STRING , description='Color'),
+            openapi.Parameter('color', openapi.IN_FORM, type=openapi.TYPE_ARRAY,items=openapi.Items(type=openapi.TYPE_STRING), description='Color Array'),
             openapi.Parameter('cost', openapi.IN_FORM, type=openapi.TYPE_STRING , description='Cost'),
+            openapi.Parameter('status', openapi.IN_FORM, type=openapi.TYPE_NUMBER , description='1:ACTIVE, 2:INACTIVE, 3:DELETED'),
             
+            openapi.Parameter('old_images', openapi.IN_FORM, type=openapi.TYPE_ARRAY,items=openapi.Items(type=openapi.TYPE_FILE), description='Old Images'),
             openapi.Parameter('images', openapi.IN_FORM, type=openapi.TYPE_ARRAY,items=openapi.Items(type=openapi.TYPE_FILE), description='Product Images'),
         ]
     )
-    def post(self, request, *args, **kwargs):
+    def patch(self, request, *args, **kwargs):
         try:
             product=Products.objects.get(id=request.data.get('id'))
         except:
@@ -172,19 +173,20 @@ class UpdateProductAPI(APIView):
             product.size=request.data.get('size')
         if request.data.get('cost'):
             product.cost=float(request.data.get('cost'))
+        if request.data.get('status'):
+            product.status=int(request.data.get('status'))
         if request.data.get('color'):
             product.color.clear()
             for color_code in request.data.getlist('color'):
                 product.color.add(ProductColors.objects.get_or_create(color_code=color_code)[0])
-        if request.data.get('title'):
-            product.images.all().delete()
-            product.images.clear()
-            for image in request.data.getlist('images'):
+        if request.FILES.getlist('images'):
+            for image in request.FILES.getlist('images'):
                 product.images.add(Images.objects.create(image=image))
+            product.images.filter(id__in=request.data.getlist('old_images')).delete()
         product.save()
         product.refresh_from_db()
         data=ProductDetailSerializer(product,context={"request":request}).data
-        return Response({"message":f"Product added successfully!","data":data,"status":status.HTTP_200_OK},status=status.HTTP_200_OK)
+        return Response({"message":f"Product updated successfully!","data":data,"status":status.HTTP_200_OK},status=status.HTTP_200_OK)
 
 
 class ProductDetailsAPI(APIView):
@@ -199,12 +201,12 @@ class ProductDetailsAPI(APIView):
         operation_id="product_details",
         operation_description="Product Details",
         manual_parameters=[
-            openapi.Parameter('id', openapi.IN_FORM, type=openapi.TYPE_STRING , description='Product ID'),
+            openapi.Parameter('id', openapi.IN_QUERY, type=openapi.TYPE_STRING , description='Product ID'),
         ]
     )
-    def post(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         try:
-            product=Products.objects.get(id=request.data.get('id'))
+            product=Products.objects.get(id=request.query_params.get('id'))
         except:
             return Response({"message":"Product does not exists!","status":status.HTTP_400_BAD_REQUEST},status=status.HTTP_400_BAD_REQUEST)
         data=ProductDetailSerializer(product,context={"request":request}).data
