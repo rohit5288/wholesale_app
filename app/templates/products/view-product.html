@@ -110,9 +110,11 @@
                                 <li>
                                     <h4>Colors</h4>
                                     <h6>
-                                        {% for color in product.color.all %}
-                                            <input disabled type="color" name="product-color" class="form-control" value="#{{color.color_code}}">
-                                        {% endfor %}
+                                        <div class="d-flex gap-2">
+                                            {% for color in product.color.all %}
+                                                <div class="product_color" style="background-color: #{{color.color_code}};"></div>
+                                            {% endfor %}
+                                        </div>
                                     </h6>
                                 </li>
                                 <li>
@@ -305,6 +307,4 @@
 
     </div>
 </div>
-
-
 {% include "admin-includes/footer.html" %}

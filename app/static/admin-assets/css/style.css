@@ -4043,3 +4043,11 @@ span.img_text {
 div#cke_notifications_area_content {
     display: none;
 }
+
+.product_color{
+	width: 25px;
+	height: 25px;
+	padding:10px;
+	border: 1px solid #000;
+	border-radius: 50%;
+}

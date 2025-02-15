@@ -179,10 +179,11 @@ class UpdateProductAPI(APIView):
             product.color.clear()
             for color_code in request.data.getlist('color'):
                 product.color.add(ProductColors.objects.get_or_create(color_code=color_code)[0])
+        if request.FILES.getlist('old_images'):
+            product.images.exclude(id__in=request.data.getlist('old_images')).delete()
         if request.FILES.getlist('images'):
             for image in request.FILES.getlist('images'):
                 product.images.add(Images.objects.create(image=image))
-            product.images.filter(id__in=request.data.getlist('old_images')).delete()
         product.save()
         product.refresh_from_db()
         data=ProductDetailSerializer(product,context={"request":request}).data
