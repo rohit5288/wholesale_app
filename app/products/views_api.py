@@ -212,3 +212,45 @@ class ProductDetailsAPI(APIView):
             return Response({"message":"Product does not exists!","status":status.HTTP_400_BAD_REQUEST},status=status.HTTP_400_BAD_REQUEST)
         data=ProductDetailSerializer(product,context={"request":request}).data
         return Response({"data":data,"status":status.HTTP_200_OK},status=status.HTTP_200_OK)
+
+class AllProductsListAPI(APIView):
+    """
+    All Product Listing API
+    """
+    permission_classes = (permissions.IsAuthenticated,)
+    parser_classes = [MultiPartParser]
+
+    @swagger_auto_schema(
+        tags=["Products Management (Buyer)"],
+        operation_id="all_product_list",
+        operation_description="All Product List",
+        manual_parameters=[
+            openapi.Parameter('page', openapi.IN_QUERY, type=openapi.TYPE_NUMBER , description='page'),
+            openapi.Parameter('search', openapi.IN_QUERY, type=openapi.TYPE_STRING , description='search'),
+            openapi.Parameter('category_ids', openapi.IN_QUERY, type=openapi.TYPE_ARRAY,items=openapi.Items(type=openapi.TYPE_STRING) , description='Category IDs Array'),
+            openapi.Parameter('latitude', openapi.IN_QUERY, type=openapi.TYPE_STRING , description='latitude'),
+            openapi.Parameter('longitude', openapi.IN_QUERY, type=openapi.TYPE_STRING , description='longitude'),
+            openapi.Parameter('sort_by', openapi.IN_QUERY, type=openapi.TYPE_INTEGER , description='1:PRICE LOW TO HIGH, 2:PRICE HIGH TO LOW'),
+        ]
+    )
+    def get(self, request, *args, **kwargs):
+        ## Validate Required Fields
+        required_fields = list(filter(None, [
+            RequiredFieldValidations.validate_field(self,request,'latitude',"get","Please enter latitude"),
+            RequiredFieldValidations.validate_field(self,request,'longitude',"get","Please enter longitude"),
+        ]))
+        products=Products.objects.filter(status=ACTIVE_PRODUCT)
+        products=annotate_distance(products,request.query_params.get('latitude'),request.query_params.get('longitude'))
+        if request.query_params.get('search'):
+            products=products.filter(Q(title__icontains=request.query_params.get('search'))|Q(category__title__icontains=request.query_params.get('search'))|Q(created_by__full_name__icontains=request.query_params.get('search')))
+        if request.query_params.getlist('category_ids'):
+            products=products.filter(category_id__in=request.query_params.getlist('category_ids')[0].split(','))
+        if int(request.query_params.get('sort_by')) == 1:
+            products=products.order_by('price')
+        elif int(request.query_params.get('sort_by')) == 2:
+            products=products.order_by('-price')
+        else:
+            products=products.order_by('distance')
+        start,end,meta_data= GetPagesData(request.query_params.get('page') if request.query_params.get('page') else None,products)
+        data=ProductListingSerializer(products[start:end],many=True,context={"request":request}).data
+        return Response({"data":data,"meta_data":meta_data,"status":status.HTTP_200_OK},status=status.HTTP_200_OK)

@@ -14,7 +14,8 @@ class AddressSerializer(ModelSerializer):
 class UserSerializer(ModelSerializer):
     token = SerializerMethodField(read_only=True)
     profile_pic =SerializerMethodField()
-    
+    address=AddressSerializer()
+
     def get_profile_pic(self,obj):
         url=self.context.get('request').build_absolute_uri(obj.profile_pic.url) if obj.profile_pic else "" 
         if url:
@@ -32,9 +33,9 @@ class UserSerializer(ModelSerializer):
 
     class Meta:
         model=User
-        fields= ("id","first_name","last_name","full_name","role_id","address","last_login","profile_pic","email","temp",
-                 "mobile_no","country_code","country_iso_code","status","temp_otp","is_profile_setup",
-                 "notification_enable","token","created_on","updated_on",)
+        fields= ("id","first_name","last_name","full_name","business_name","role_id","address","last_login","profile_pic","email","temp",
+                 "mobile_no","country_code","country_iso_code","status","temp_otp","is_profile_setup","gst_no","gst_document",
+                 "notification_enable","token","created_on","updated_on")
 
 
 class SellerSerializer(ModelSerializer):

@@ -15,11 +15,12 @@ from logger.models import *
 from threading import Thread
 from accounts.constants import *
 from datetime import datetime,date,timedelta
-from django.db.models import Q 
+from django.db.models import Q,F
 from django.core.mail.backends.smtp import EmailBackend
 from rest_framework.authtoken.models import Token 
 import json
 import csv
+from django.db.models.functions import Radians, Power, Sin, Cos, ATan2, Sqrt, Radians
 import os
 from django.core.mail import get_connection
 from credentials.models import *
@@ -333,3 +334,11 @@ def CreateUserActivityLog(title:str,description:str,user:User,activity_type:int,
      except Exception as e:
         db_logger.exception(e)
 
+def annotate_distance(queryset,latitude,longitude):
+    diff_lat = Radians(F('latitude') - float(latitude))
+    diff_long = Radians(F('longitude') - float(longitude))
+    x = (Power(Sin(diff_lat/2), 2) + Cos(Radians(float(latitude))) 
+        * Cos(Radians(F('latitude'))) * Power(Sin(diff_long/2), 2))
+    y = 2 * ATan2(Sqrt(x), Sqrt(1-x))
+    z = 6371 * y
+    queryset=queryset.annotate(distance=z)

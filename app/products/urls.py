@@ -24,10 +24,13 @@ urlpatterns = [
     re_path(r'^products-list/$',ProductsList.as_view(),name="products_list"),
     re_path(r'^view-product/(?P<id>[-\w]+)/$',ViewProduct.as_view(),name="view_product"),
 
-    ##Product Management APIs
+    ##Product Management APIs (Seller)
     re_path(r'^list-categories-api/$',CategoriesListingAPI.as_view(),name="list_categories_api"),
     re_path(r'^add-product-api/$',AddProductAPI.as_view(),name="add_product_api"),
     re_path(r'^list-products-api/$',ProductsListAPI.as_view(),name="add_product_api"),
     re_path(r'^update-product-api/$',UpdateProductAPI.as_view(),name="update_product_api"),
     re_path(r'^product-detail-api/$',ProductDetailsAPI.as_view(),name="product_detail_api"),
+    
+    ##Product Management APIs (Buyer)
+    re_path(r'^all-products-api/$',AllProductsListAPI.as_view(),name="all_products_api"),
 ]
